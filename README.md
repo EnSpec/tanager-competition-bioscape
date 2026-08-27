@@ -137,6 +137,12 @@ HyTools reader.
     same field-referenced color scale as the ternary map.
     `figures/tanager_vs_emit_sidebyside_maps.png` — strong spatial
     agreement between the two sensors, good headline figure candidate.
+13. `step12_nitrogen_tanager_emit_aviris.py` — separate 3-panel figure
+    (Tanager | EMIT | AVIRIS-NG airborne), Nitrogen only — the one trait
+    where the AVIRIS-NG comparison is empirically supported. Kept out of
+    step11's figure since AVIRIS-NG only covers 30.6% of the scene and
+    the other 3 traits carry the IR-uvf/FULL-uvf model-variant caveat.
+    `figures/nitrogen_tanager_emit_aviris.png`.
 
 ## Environment
 
