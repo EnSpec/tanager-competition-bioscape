@@ -38,10 +38,12 @@ NDVI_MASK_TIF = TRAIT_OUTPUT_DIR + f"{STEM}_ndvi_shadow_mask.tif"
 # NOT this scene's own predicted range, deliberately: using the scene's
 # own min/max would make every map "well-stretched" regardless of how
 # biased the underlying predictions are (Calcium's ~2.6x high bias would
-# just get quietly renormalized away). Edit here to try other combos --
-# Calcium is included but its known high bias means it'll skew toward its
-# own channel's bright end almost everywhere; Nitrogen/Lignin/Cellulose is
-# the more defensible three-trait default.
+# just get quietly renormalized away). All FULL-uvf -- see step2's
+# comment / CLAUDE.md "IR-uvf vs FULL-uvf: a real detour" for why IR-uvf
+# was tried and reverted. Calcium is included in TRAIT_RANGES but its
+# known high bias means it'll skew toward its own channel's bright end
+# almost everywhere; Nitrogen/Lignin/Cellulose is the more defensible
+# three-trait default.
 TRAIT_RANGES = {
     "Nitrogen": (4.71, 23.51),
     "Calcium": (1.51, 16.67),

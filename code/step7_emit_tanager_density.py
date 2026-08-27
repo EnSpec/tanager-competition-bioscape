@@ -18,11 +18,15 @@ TRAIT_OUTPUT_DIR = "/Volumes/Enspec/projects/BioScape/tanager_competition/trait_
 FIGURES_DIR = "/Volumes/Enspec/projects/BioScape/tanager_competition/figures/"
 TANAGER_STEM = "20250504_092952_87_4001_basic_sr_hdf5"
 
+# (stem, units, model variant) -- all FULL-uvf. Tried IR-uvf (the lab's
+# general same-sensor default) and reverted after checking against CWM
+# field data -- worse for every trait in this cross-sensor context. See
+# step2's comment / CLAUDE.md "IR-uvf vs FULL-uvf: a real detour".
 TRAITS = {
-    "Nitrogen": ("Nitrogen_merged_cwm_iter_mean", "mg/g"),
-    "Calcium": ("Calcium_mg_per_g_cwm_iter_mean", "mg/g"),
-    "Lignin": ("Lignin_recal_mg_g_cwm_iter_mean", "mg/g"),
-    "Cellulose": ("Cellulose_mg_g_cwm_iter_mean", "mg/g"),
+    "Nitrogen": ("Nitrogen_merged_cwm_iter_mean", "mg/g", "FULL-uvf"),
+    "Calcium": ("Calcium_mg_per_g_cwm_iter_mean", "mg/g", "FULL-uvf"),
+    "Lignin": ("Lignin_recal_mg_g_cwm_iter_mean", "mg/g", "FULL-uvf"),
+    "Cellulose": ("Cellulose_mg_g_cwm_iter_mean", "mg/g", "FULL-uvf"),
 }
 
 
@@ -42,9 +46,9 @@ def main():
     lon_min, lat_min, lon_max, lat_max = transform_bounds(tanager_crs, "EPSG:4326", *tanager_bounds)
 
     fig, axes = plt.subplots(2, 2, figsize=(11, 9))
-    for ax, (label, (stem, units)) in zip(axes.flat, TRAITS.items()):
-        tanager_tif = TRAIT_OUTPUT_DIR + f"{TANAGER_STEM}_plsr__sampled_{stem}__FULL-uvf__ideny__rep__boa.tif"
-        emit_tif = TRAIT_OUTPUT_DIR + f"emit_20260302_plsr__sampled_{stem}__FULL-uvf__ideny__rep__boa.tif"
+    for ax, (label, (stem, units, variant)) in zip(axes.flat, TRAITS.items()):
+        tanager_tif = TRAIT_OUTPUT_DIR + f"{TANAGER_STEM}_plsr__sampled_{stem}__{variant}__ideny__rep__boa.tif"
+        emit_tif = TRAIT_OUTPUT_DIR + f"emit_20260302_plsr__sampled_{stem}__{variant}__ideny__rep__boa.tif"
 
         tanager_vals = load_range_valid(tanager_tif)
         with rasterio.open(emit_tif) as src:

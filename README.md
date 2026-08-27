@@ -24,6 +24,10 @@ All data lives on the Enspec server, **not** in this repo:
   figures/            presentation-ready plots (density comparisons,
                       QA previews) - distinct from trait_outputs/'s raw
                       GeoTIFFs
+  aviris_aoi_mosaic/  BioSCape's own AVIRIS-NG imagery, mosaicked over
+                      this scene's footprint (30.6% coverage, Nov 2023,
+                      never mosaicked before this project) - see
+                      CLAUDE.md "AVIRIS-NG AOI mosaic + comparison"
 ```
 
 **Example scene**: `20250504_092952_87_4001_basic_sr_hdf5.h5` (~1 GB), from
@@ -77,6 +81,11 @@ HyTools reader.
    see CLAUDE.md "Trait application pipeline" for the cross-sensor FWHM
    matching approach and first-run results (Nitrogen looks good; LMA has
    a real cross-sensor sensitivity issue, not a bug — see CLAUDE.md).
+   **All four kept traits (Nitrogen, Calcium, Lignin, Cellulose) use
+   FULL-uvf** — tried switching to IR-uvf (the lab's general same-sensor
+   default) and reverted after it checked out worse against field data
+   for every trait tried; see CLAUDE.md "IR-uvf vs FULL-uvf: a real
+   detour" for the numbers and reasoning.
 4. `step3_ground_validation.py` — checks CWM ground plots against the
    scene footprint; currently reports **zero overlap** for this scene
    (nearest plot cluster ~17.5 km outside the edge). A denser regional
@@ -112,6 +121,17 @@ HyTools reader.
     the California scene (own thresholds from its own histogram, more
     cleanly bimodal than the Cape one). Cleans up the coastal/urban noise
     seen in the unmasked QA preview.
+11. `step10_mosaic_aviris_aoi.R` — mosaics BioSCape's own AVIRIS-NG L3
+    trait tiles (Nov 2023) over this scene's footprint (30.6% coverage,
+    24 tiles across 6 flightlines, none previously mosaicked for this
+    area). R/terra, not Python — reuses
+    `Workflow11_Trait_Map_Assess/code/mosaic_trait_tiles.R` directly
+    rather than reimplementing tile mosaicking. Output:
+    `aviris_aoi_mosaic/`. See CLAUDE.md "AVIRIS-NG AOI mosaic +
+    comparison" for tile-selection details and the comparison result
+    (Nitrogen matches almost exactly; the other 3 traits carry a
+    model-variant caveat — the precomputed BioSCape tiles use IR-uvf for
+    everything except Lignin).
 
 ## Environment
 

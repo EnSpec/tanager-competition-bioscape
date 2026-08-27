@@ -44,6 +44,11 @@ TRAIT_MODEL_DIR = (
     "/Users/henryfrye/Dropbox/Intellectual_Endeavours/Wisconsin/"
     "Airborne_Apply_Models/bioscape/trait_models/"
 )
+# Same variant choice as step2 -- FULL-uvf for all four. Tried IR-uvf
+# (the lab's general same-sensor convention) and reverted after checking
+# against CWM field data: IR-uvf was worse for every trait in this
+# cross-sensor context. See step2's comment / CLAUDE.md "IR-uvf vs
+# FULL-uvf: a real detour" for the numbers.
 TRAIT_MODELS = [
     TRAIT_MODEL_DIR + "plsr__sampled_Nitrogen_merged_cwm_iter_mean__FULL-uvf__ideny__rep__boa.json",
     TRAIT_MODEL_DIR + "plsr__sampled_Calcium_mg_per_g_cwm_iter_mean__FULL-uvf__ideny__rep__boa.json",

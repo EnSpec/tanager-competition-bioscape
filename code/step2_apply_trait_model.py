@@ -65,13 +65,31 @@ TRAIT_MODEL_DIR = (
     "/Users/henryfrye/Dropbox/Intellectual_Endeavours/Wisconsin/"
     "Airborne_Apply_Models/bioscape/trait_models/"
 )
-# FULL-uvf models use the whole 452-2446 nm range; Tanager covers this
-# fully, so FULL is preferred over the IR-only variant where available.
-# LMA (both FULL and IR-uvf variants) transfers poorly cross-sensor --
-# 12-16% of pixels within its own diagnostic range, vs. 94-95% for
-# Nitrogen/Calcium/Lignin -- see CLAUDE.md "Trait application pipeline"
-# results table. Dropped from the default set; re-add only with an
-# explicit low-confidence caveat if it's needed for the write-up.
+# Lab convention (Henry, 2026-08-27): IR-uvf is preferred by default --
+# more parsimonious, avoids conflating pigment absorption with the
+# visible-wavelength bands. Lignin is the deliberate exception: it does
+# meaningfully better with the FULL model (leverages the red edge), so
+# FULL-uvf is used for Lignin specifically. This also matches which
+# variant the original BioSCape L3 tile products used per trait (checked
+# directly -- Lignin's precomputed tiles are FULL-uvf, Nitrogen/Calcium/
+# Cellulose are IR-uvf), so this keeps step10's AVIRIS-NG AOI mosaic
+# comparison apples-to-apples without extra reprocessing.
+#
+# LMA (tried both variants) transfers poorly cross-sensor -- 12-16% of
+# pixels within its own diagnostic range, vs. 94-95%+ for the others --
+# see CLAUDE.md "Trait application pipeline" results table. Dropped.
+#
+# IR-uvf vs FULL-uvf (2026-08-27): tried switching Nitrogen/Calcium/
+# Cellulose to IR-uvf to match the lab's general same-sensor convention
+# (more parsimonious, avoids visible-wavelength pigment conflation).
+# Checked each against the CWM field data before committing: IR-uvf was
+# WORSE for every trait in THIS cross-sensor (AVIRIS-NG model -> Tanager/
+# EMIT) context -- Nitrogen's bias grew from ~1.6x to ~3.6x (95% -> 77.6%
+# in-range), Calcium's bias grew slightly, Cellulose became unusable
+# (5-10% in-range, median -374 mg/g). Reverted to FULL-uvf for all four
+# traits -- empirically the better choice for this specific cross-sensor
+# task, even though it's not the lab's general default. See CLAUDE.md
+# "IR-uvf vs FULL-uvf: a real detour" for the full numbers.
 TRAIT_MODELS = [
     TRAIT_MODEL_DIR + "plsr__sampled_Nitrogen_merged_cwm_iter_mean__FULL-uvf__ideny__rep__boa.json",
     TRAIT_MODEL_DIR + "plsr__sampled_Calcium_mg_per_g_cwm_iter_mean__FULL-uvf__ideny__rep__boa.json",
