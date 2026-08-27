@@ -16,3 +16,4 @@ pyproj==3.7.2
 matplotlib==3.11.1
 netCDF4==1.7.4
 aiohttp
+pandas==3.0.5

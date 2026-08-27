@@ -71,9 +71,18 @@ HyTools reader.
    a real cross-sensor sensitivity issue, not a bug — see CLAUDE.md).
 4. `step3_ground_validation.py` — checks CWM ground plots against the
    scene footprint; currently reports **zero overlap** for this scene
-   (nearest plot cluster ~17.5 km outside the edge) — see CLAUDE.md
-   "Ground validation check" for options going forward
-5. Stretch: EMIT scene over same area for comparison
+   (nearest plot cluster ~17.5 km outside the edge). A denser regional
+   leaf-trait survey (GCFR Dimensions data paper, thousands of points)
+   also has zero overlap (nearest ~60 km) — see CLAUDE.md "Ground
+   validation check" / "Regional ballpark check". No formal or ballpark
+   validation is possible against this specific scene; folded into the
+   coverage-gap pitch instead.
+5. `step4_ndvi_shadow_mask.py` — NDVI (matching
+   `bioscape_indices/indices/NDVI.json`'s formula) + a simple
+   NIR-brightness shadow mask + combined veg mask, gridded to match the
+   trait maps. See CLAUDE.md "NDVI + shadow mask" for threshold choices.
+6. Stretch: EMIT scene over same area for comparison; California
+   cross-model comparison (see CLAUDE.md "Next up")
 
 ## Environment
 
