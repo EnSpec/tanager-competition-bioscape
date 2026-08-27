@@ -55,16 +55,26 @@ HyTools reader.
 ## Run order
 
 1. `step1_inspect_tanager_h5.py` — dump the h5 structure (done; see above)
-2. Download the scene to `raw_h5/`
-3. Trait application script (TBD) — read cube, interpolate onto trait
-   model wavelengths, apply PLSR coefficients, grid swath onto the
-   `Planet_Ortho_Framing` UTM grid via the Lat/Lon arrays, write GeoTIFF
+2. Download the scene to `raw_h5/` (done)
+3. `step2_apply_trait_model.py` — reads the h5 cube, Gaussian-resamples
+   onto the BioSCape (AVIRIS-NG-trained) trait models' band grid, applies
+   PLSR coefficients, grids the swath onto the `Planet_Ortho_Framing` UTM
+   target via the Lat/Lon arrays, writes GeoTIFFs to `trait_outputs/`.
+   Uses the BioSCape-trained models
+   (`Airborne_Apply_Models/bioscape/trait_models/*FULL-uvf*.json`), not
+   the NEON-trained ones used earlier in the Prairie du Sac smoke test —
+   see CLAUDE.md "Trait application pipeline" for the cross-sensor FWHM
+   matching approach and first-run results (Nitrogen looks good; LMA has
+   a real cross-sensor sensitivity issue, not a bug — see CLAUDE.md).
 4. Validation against BioSCape ground sites in scene footprint
 5. Stretch: EMIT scene over same area for comparison
 
 ## Environment
 
-- **Python**: `pip install -r requirements.txt`. `h5py`/`fsspec` are
-  already installed in `/opt/anaconda3` (used for the h5 inspection above);
-  the default `python3` on this machine (Homebrew) has neither — check
-  `which python3` if imports fail.
+- **Python**: this repo has its **own isolated venv** —
+  `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
+  Do **not** install into the shared `/opt/anaconda3` base conda env:
+  `rasterio`/`pyproj` pull in numpy 2.x, which breaks version pins other
+  projects rely on in that shared env (hit this during setup — see
+  CLAUDE.md "Environment note"). Always run this repo's scripts with
+  `.venv/bin/python3`.
