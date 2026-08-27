@@ -81,8 +81,12 @@ HyTools reader.
    `bioscape_indices/indices/NDVI.json`'s formula) + a simple
    NIR-brightness shadow mask + combined veg mask, gridded to match the
    trait maps. See CLAUDE.md "NDVI + shadow mask" for threshold choices.
-6. Stretch: EMIT scene over same area for comparison; California
-   cross-model comparison (see CLAUDE.md "Next up")
+6. `step5_ternary_map.py` — 3-trait RGB composite (default:
+   Nitrogen/Lignin/Cellulose), normalized to region-wide CWM field-data
+   ranges (not the scene's own range — see CLAUDE.md "Ternary map" for
+   why), veg-masked via step4. First figure candidate, visually checked.
+7. Stretch: EMIT scene over same area for comparison (California
+   cross-model comparison dropped — see CLAUDE.md "Next up")
 
 ## Environment
 
