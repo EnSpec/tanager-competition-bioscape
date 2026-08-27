@@ -15,7 +15,13 @@ All data lives on the Enspec server, **not** in this repo:
   ground_validation/ CWM ground-plot geojson (copied from
                       Workflow9_community_weighted_means - see CLAUDE.md,
                       zero plots overlap this scene)
-  emit_comparison/   stretch goal - EMIT scene over same area, for comparison
+  emit_comparison/   EMIT L2A scene (2026-03-02, see CLAUDE.md "EMIT
+                      scene selection" for why this date) + its trait
+                      outputs live in trait_outputs/ (emit_* prefix)
+  shift_models_Aug2026/ California (SHIFT campaign)-trained PLSR trait
+                      models from a colleague - IR-range, own FWHM
+                      baked in. Not yet applied (needs a CA Tanager
+                      scene) - see CLAUDE.md "Next up"
 ```
 
 **Example scene**: `20250504_092952_87_4001_basic_sr_hdf5.h5` (~1 GB), from
@@ -85,8 +91,14 @@ HyTools reader.
    Nitrogen/Lignin/Cellulose), normalized to region-wide CWM field-data
    ranges (not the scene's own range — see CLAUDE.md "Ternary map" for
    why), veg-masked via step4. First figure candidate, visually checked.
-7. Stretch: EMIT scene over same area for comparison (California
-   cross-model comparison dropped — see CLAUDE.md "Next up")
+7. `step6_apply_trait_model_emit.py` — same trait models applied to an
+   EMIT L2A scene (2026-03-02) for a cross-sensor comparison. Result:
+   strong agreement with Tanager over the same AOI (Nitrogen/Cellulose
+   within ~5-8% at the median, Calcium/Lignin within ~12-23% but in the
+   same direction as their known field-data biases) — see CLAUDE.md
+   "EMIT vs. Tanager comparison".
+8. California cross-model comparison — back on (colleague delivered the
+   models after all), not yet started — see CLAUDE.md "Next up"
 
 ## Environment
 
