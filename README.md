@@ -132,6 +132,11 @@ HyTools reader.
     (Nitrogen matches almost exactly; the other 3 traits carry a
     model-variant caveat — the precomputed BioSCape tiles use IR-uvf for
     everything except Lignin).
+12. `step11_tanager_emit_sidebyside_maps.py` — side-by-side Tanager vs.
+    EMIT trait maps, all 4 traits, EMIT reprojected onto Tanager's grid,
+    same field-referenced color scale as the ternary map.
+    `figures/tanager_vs_emit_sidebyside_maps.png` — strong spatial
+    agreement between the two sensors, good headline figure candidate.
 
 ## Environment
 
