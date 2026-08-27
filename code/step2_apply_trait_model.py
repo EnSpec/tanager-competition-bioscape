@@ -67,9 +67,16 @@ TRAIT_MODEL_DIR = (
 )
 # FULL-uvf models use the whole 452-2446 nm range; Tanager covers this
 # fully, so FULL is preferred over the IR-only variant where available.
+# LMA (both FULL and IR-uvf variants) transfers poorly cross-sensor --
+# 12-16% of pixels within its own diagnostic range, vs. 94-95% for
+# Nitrogen/Calcium/Lignin -- see CLAUDE.md "Trait application pipeline"
+# results table. Dropped from the default set; re-add only with an
+# explicit low-confidence caveat if it's needed for the write-up.
 TRAIT_MODELS = [
     TRAIT_MODEL_DIR + "plsr__sampled_Nitrogen_merged_cwm_iter_mean__FULL-uvf__ideny__rep__boa.json",
-    TRAIT_MODEL_DIR + "plsr__sampled_lma_cwm_iter_mean__FULL-uvf__ideny__rep__boa.json",
+    TRAIT_MODEL_DIR + "plsr__sampled_Calcium_mg_per_g_cwm_iter_mean__FULL-uvf__ideny__rep__boa.json",
+    TRAIT_MODEL_DIR + "plsr__sampled_Lignin_recal_mg_g_cwm_iter_mean__FULL-uvf__ideny__rep__boa.json",
+    TRAIT_MODEL_DIR + "plsr__sampled_Cellulose_mg_g_cwm_iter_mean__FULL-uvf__ideny__rep__boa.json",
 ]
 OUTPUT_DIR = "/Volumes/Enspec/projects/BioScape/tanager_competition/trait_outputs/"
 

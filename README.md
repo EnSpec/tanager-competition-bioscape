@@ -12,6 +12,9 @@ All data lives on the Enspec server, **not** in this repo:
 /Volumes/Enspec/projects/BioScape/tanager_competition/
   raw_h5/            downloaded Tanager basic_sr_hdf5 scene(s)
   trait_outputs/     trait map GeoTIFFs
+  ground_validation/ CWM ground-plot geojson (copied from
+                      Workflow9_community_weighted_means - see CLAUDE.md,
+                      zero plots overlap this scene)
   emit_comparison/   stretch goal - EMIT scene over same area, for comparison
 ```
 
@@ -66,7 +69,10 @@ HyTools reader.
    see CLAUDE.md "Trait application pipeline" for the cross-sensor FWHM
    matching approach and first-run results (Nitrogen looks good; LMA has
    a real cross-sensor sensitivity issue, not a bug — see CLAUDE.md).
-4. Validation against BioSCape ground sites in scene footprint
+4. `step3_ground_validation.py` — checks CWM ground plots against the
+   scene footprint; currently reports **zero overlap** for this scene
+   (nearest plot cluster ~17.5 km outside the edge) — see CLAUDE.md
+   "Ground validation check" for options going forward
 5. Stretch: EMIT scene over same area for comparison
 
 ## Environment
