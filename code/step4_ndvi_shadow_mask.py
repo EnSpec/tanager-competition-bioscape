@@ -35,8 +35,15 @@ def nearest_band(wavelengths, target, tolerance):
     return idx
 
 
-def main():
-    scene = read_tanager_scene(TANAGER_H5)
+def compute_and_write_mask(h5_path, out_path, shadow_threshold, veg_ndvi_threshold, scene=None):
+    """Reusable across scenes -- Cape (this file's __main__) and
+    California (step9) both call this, each with thresholds picked from
+    that scene's OWN R800/NDVI histogram rather than reusing the other
+    scene's numbers (surface reflectance levels aren't necessarily
+    comparable band-for-band across acquisitions/processing runs).
+    """
+    if scene is None:
+        scene = read_tanager_scene(h5_path)
     wl = scene["wavelengths"]
 
     i_nir = nearest_band(wl, NDVI_WAVELENGTHS[0], WAVELENGTH_TOLERANCE)
@@ -54,8 +61,8 @@ def main():
     # keeps the NDVI band itself sane rather than double-handling them.
     ndvi = np.clip(ndvi, -1.0, 1.0)
 
-    shadow_mask = (r_nir < SHADOW_R800_THRESHOLD).astype(np.float32)
-    veg_mask = ((ndvi >= VEG_NDVI_THRESHOLD) & (r_nir >= SHADOW_R800_THRESHOLD)).astype(np.float32)
+    shadow_mask = (r_nir < shadow_threshold).astype(np.float32)
+    veg_mask = ((ndvi >= veg_ndvi_threshold) & (r_nir >= shadow_threshold)).astype(np.float32)
 
     arrays = {
         "NDVI": ndvi.astype(np.float32),
@@ -68,8 +75,6 @@ def main():
     print("Gridding onto ortho target grid...")
     gridded, transform, epsg = grid_swath_to_ortho(arrays, scene["lat"], scene["lon"], scene["ortho_framing"])
 
-    out_path = OUTPUT_DIR.replace("trait_outputs", "trait_outputs") + \
-        "20250504_092952_87_4001_basic_sr_hdf5_ndvi_shadow_mask.tif"
     write_geotiff(out_path, gridded, transform, epsg, band_order=list(arrays.keys()))
     print(f"Wrote {out_path}")
 
@@ -77,6 +82,12 @@ def main():
     print(f"\nScene-wide (swath, pre-grid): NDVI median={np.median(valid):.2f}, "
           f"{shadow_mask[~scene['nodata_pixels']].mean()*100:.1f}% flagged shadow, "
           f"{veg_mask[~scene['nodata_pixels']].mean()*100:.1f}% flagged vegetated")
+    return scene
+
+
+def main():
+    out_path = OUTPUT_DIR + "20250504_092952_87_4001_basic_sr_hdf5_ndvi_shadow_mask.tif"
+    compute_and_write_mask(TANAGER_H5, out_path, SHADOW_R800_THRESHOLD, VEG_NDVI_THRESHOLD)
 
 
 if __name__ == "__main__":

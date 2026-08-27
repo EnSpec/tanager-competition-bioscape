@@ -107,9 +107,11 @@ HyTools reader.
    area. Confirms the sqrt Y-transform fix for LMA/Calcium works: LMA
    went from 16% in-range (Cape, no fix) to 99.8% in-range here, with
    physically plausible values throughout — see CLAUDE.md "California
-   (SHIFT models) results". Needs a veg/water mask before it's
-   presentation-ready (coastal/urban strip is noisy, same fix step4 did
-   for the Cape scene, not yet built here).
+   (SHIFT models) results".
+10. `step9_ndvi_shadow_mask_california.py` — same treatment as step4 for
+    the California scene (own thresholds from its own histogram, more
+    cleanly bimodal than the Cape one). Cleans up the coastal/urban noise
+    seen in the unmasked QA preview.
 
 ## Environment
 
