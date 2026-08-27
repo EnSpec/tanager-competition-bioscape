@@ -1,0 +1,11 @@
+# Python dependencies for the Tanager trait-mapping scripts.
+# Verified against /opt/anaconda3 (Python 3.12) — h5py/fsspec/hytools are
+# already installed there; see README's Environment section.
+
+h5py==3.13.0
+fsspec==2026.2.0
+requests
+numpy
+rasterio
+pyproj
+matplotlib
