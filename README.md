@@ -20,8 +20,10 @@ All data lives on the Enspec server, **not** in this repo:
                       outputs live in trait_outputs/ (emit_* prefix)
   shift_models_Aug2026/ California (SHIFT campaign)-trained PLSR trait
                       models from a colleague - IR-range, own FWHM
-                      baked in. Not yet applied (needs a CA Tanager
-                      scene) - see CLAUDE.md "Next up"
+                      baked in, LMA/Calcium use a sqrt Y-transform
+  figures/            presentation-ready plots (density comparisons,
+                      QA previews) - distinct from trait_outputs/'s raw
+                      GeoTIFFs
 ```
 
 **Example scene**: `20250504_092952_87_4001_basic_sr_hdf5.h5` (~1 GB), from
@@ -97,8 +99,17 @@ HyTools reader.
    within ~5-8% at the median, Calcium/Lignin within ~12-23% but in the
    same direction as their known field-data biases) — see CLAUDE.md
    "EMIT vs. Tanager comparison".
-8. California cross-model comparison — back on (colleague delivered the
-   models after all), not yet started — see CLAUDE.md "Next up"
+8. `step7_emit_tanager_density.py` — density-distribution comparison
+   (KDE overlays) of Tanager vs. EMIT predicted values, same AOI as the
+   percentile table above. `figures/emit_vs_tanager_density.png`.
+9. `step8_apply_trait_model_california.py` — applies the colleague's
+   SHIFT (Santa Barbara)-trained models to a Tanager scene over the same
+   area. Confirms the sqrt Y-transform fix for LMA/Calcium works: LMA
+   went from 16% in-range (Cape, no fix) to 99.8% in-range here, with
+   physically plausible values throughout — see CLAUDE.md "California
+   (SHIFT models) results". Needs a veg/water mask before it's
+   presentation-ready (coastal/urban strip is noisy, same fix step4 did
+   for the Cape scene, not yet built here).
 
 ## Environment
 

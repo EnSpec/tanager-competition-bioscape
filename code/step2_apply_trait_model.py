@@ -238,6 +238,16 @@ def apply_trait_model(resampled_reflectance, trait_model):
     # (n_pixels, bands) . (bootstraps, bands).T -> (n_pixels, bootstraps)
     pred = spectra @ trait_model["coefficients"].T + trait_model["intercepts"]
 
+    # Response-variable transform (e.g. SHIFT's LMA/Calcium models were
+    # fit on sqrt(trait) to keep predictions non-negative). Invert PER
+    # BOOTSTRAP, before aggregating -- squaring the mean afterward instead
+    # would be wrong (mean of squares != square of mean for a nonlinear
+    # transform). Absent for BioSCape's AVIRIS-NG models (no y_transform
+    # key), so this is a no-op there.
+    y_transform = trait_model.get("y_transform")
+    if y_transform == "sqrt":
+        pred = pred ** 2
+
     trait_mean = pred.mean(axis=1).reshape(lines, cols)
     trait_std = pred.std(axis=1, ddof=1).reshape(lines, cols)
 
