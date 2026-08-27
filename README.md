@@ -143,6 +143,14 @@ HyTools reader.
     step11's figure since AVIRIS-NG only covers 30.6% of the scene and
     the other 3 traits carry the IR-uvf/FULL-uvf model-variant caveat.
     `figures/nitrogen_tanager_emit_aviris.png`.
+14. `step13_california_sidebyside_maps.py` — all 5 California SHIFT
+    traits in one row, field-referenced color scale (each model's own
+    `field_min`/`field_max`), veg-masked. `figures/california_sidebyside_maps.png`.
+15. `step14_tanager_emit_difference_map.py` — per-pixel (EMIT-Tanager)
+    difference, all 4 Cape traits. Diagnostic, not just cosmetic: Lignin
+    shows a uniform offset (looks like sensor calibration), Calcium shows
+    real spatial structure (south vs. north of the scene), Nitrogen is
+    small/patternless, Cellulose is noisy. `figures/tanager_emit_difference_map.png`.
 
 ## Environment
 
