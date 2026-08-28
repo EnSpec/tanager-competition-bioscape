@@ -65,15 +65,15 @@ def main():
     ax.fill_between(tan_wl, tan_fwhm, np.interp(tan_wl, av_wl, av_fwhm),
                      where=(tan_fwhm > np.interp(tan_wl, av_wl, av_fwhm)),
                      color="#d55e00", alpha=0.15, label="Tanager wider than AVIRIS-NG (can't sharpen)")
-    ax.set_xlabel("Wavelength (nm)", fontsize=15)
-    ax.set_ylabel("FWHM (nm)", fontsize=15)
+    ax.set_xlabel("Wavelength (nm)", fontsize=18)
+    ax.set_ylabel("FWHM (nm)", fontsize=18)
     ax.set_title(
         "Spectral response width by wavelength: Tanager vs. AVIRIS-NG vs. EMIT\n"
         "(real per-band values, not nominal spec-sheet FWHM)",
-        fontsize=15,
+        fontsize=17,
     )
-    ax.tick_params(axis="both", labelsize=13)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=2, fontsize=13)
+    ax.tick_params(axis="both", labelsize=15)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2, fontsize=15)
     ax.set_xlim(376, 2500)
     fig.tight_layout()
     fig.savefig(OUT_PATH, dpi=150, bbox_inches="tight")

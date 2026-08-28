@@ -13,6 +13,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patheffects
+from matplotlib.patches import Polygon
 
 TERNARY_TIF = (
     "/Volumes/Enspec/projects/BioScape/tanager_competition/trait_outputs/"
@@ -47,17 +48,21 @@ def main():
     ax.plot([margin_x, margin_x + bar_px], [bar_y, bar_y], color="black",
              linewidth=1, solid_capstyle="butt")
     ax.text(margin_x + bar_px / 2, bar_y - height * 0.015, f"{SCALE_BAR_M // 1000} km",
-            color="white", ha="center", va="bottom", fontsize=11, fontweight="bold",
+            color="white", ha="center", va="bottom", fontsize=14, fontweight="bold",
             path_effects=[matplotlib.patheffects.withStroke(linewidth=2.5, foreground="black")])
 
-    # North arrow: top-right.
+    # North arrow: simple solid triangle, top-right, with N below the base.
     arrow_x = width * 0.94
-    arrow_y_tail = height * 0.16
-    arrow_y_head = height * 0.04
-    ax.annotate("", xy=(arrow_x, arrow_y_head), xytext=(arrow_x, arrow_y_tail),
-                arrowprops=dict(facecolor="white", edgecolor="black", width=4, headwidth=12, headlength=10))
-    ax.text(arrow_x, arrow_y_tail + height * 0.015, "N", color="white", ha="center",
-            va="top", fontsize=13, fontweight="bold",
+    arrow_top = height * 0.04
+    arrow_base = height * 0.14
+    arrow_half_width = width * 0.02
+    triangle = Polygon(
+        [(arrow_x, arrow_top), (arrow_x - arrow_half_width, arrow_base), (arrow_x + arrow_half_width, arrow_base)],
+        closed=True, facecolor="white", edgecolor="black", linewidth=1.5,
+    )
+    ax.add_patch(triangle)
+    ax.text(arrow_x, arrow_base + height * 0.015, "N", color="white", ha="center",
+            va="top", fontsize=16, fontweight="bold",
             path_effects=[matplotlib.patheffects.withStroke(linewidth=2.5, foreground="black")])
 
     fig.savefig(OUT_PATH, dpi=150, bbox_inches="tight", pad_inches=0.05)

@@ -156,10 +156,7 @@ carries its own known high bias, discussed above), but Calcium and
 Cellulose are also plausibly biologically linked: calcium cross-links
 pectin in the cell wall matrix via calcium-pectate bridges, alongside
 cellulose's fibrillar backbone, so pairing Calcium with Lignin/Nitrogen
-here is a defensible choice rather than an arbitrary one. LMA was
-dropped from the Cape analysis entirely — it produced physically
-impossible negative values across most of the scene (Section 7 explains
-the fix that solved this for California).
+here is a defensible choice rather than an arbitrary one.
 
 ![Ternary composite: Nitrogen (red) / Lignin (green) / Calcium (blue), Tanager, field-referenced ranges](figures/ternary_field_referenced.png)
 
@@ -295,9 +292,9 @@ chemistry (same platform as BioSCape, an entirely separate campaign and
 region) — to a Tanager scene over the SHIFT study area, using the same
 FWHM-matching pipeline built for the Cape.
 
-![California SHIFT-model predicted trait patterns, all 5 traits, Low/Med/High](figures/california_sidebyside_maps.png)
+![California SHIFT-model predicted trait patterns, all 4 traits, Low/Med/High](figures/california_sidebyside_maps.png)
 
-*Figure 8. California (SHIFT models), all 5 traits, relabeled to
+*Figure 8. California (SHIFT models), all 4 traits, relabeled to
 relative Low/Med/High terciles per trait (scene-relative, not a
 numeric/field-referenced scale) specifically so this reads as a pattern
 check rather than a validated product. Clear mountain/valley/
@@ -397,7 +394,7 @@ City, UT, USA (pp. 10-13).
 | 5 | Tanager vs. EMIT, density distributions | 4 | `figures/emit_vs_tanager_density.png` |
 | 6 | Tanager vs. EMIT, per-pixel difference | 4 | `figures/tanager_emit_difference_map.png` |
 | 7 | Nitrogen: Tanager vs. EMIT vs. AVIRIS-NG | 5 | `figures/nitrogen_tanager_emit_aviris.png` |
-| 8 | California, all 5 traits (Low/Med/High) | 7 | `figures/california_sidebyside_maps.png` |
+| 8 | California, all 4 traits (Low/Med/High) | 7 | `figures/california_sidebyside_maps.png` |
 
 All paths are relative to `writeup/`; every file above is committed to
 this repo under `writeup/figures/`.
@@ -412,8 +409,6 @@ this repo under `writeup/figures/`.
       Nitrogen/Lignin/Calcium) but kept as a caveated table row — weakest
       of the four kept traits, passing its own diagnostic range check on
       only 53% of vegetated pixels.
-- [ ] Tighten Section 1/8 for final word count once overall length target
-      is known.
 - [x] BioSCape/AVIRIS-NG citations and DOI added (Cardoso et al. 2025,
       Kovach et al. 2025) — pulled from
       `Manuscripts/bioscape_trait_map_V1_DAAC.docx`.

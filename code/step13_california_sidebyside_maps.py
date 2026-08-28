@@ -1,7 +1,10 @@
-"""California SHIFT-model trait maps, all 5 traits side by side in one
-figure -- companion to step11 (Cape), but single-sensor (no EMIT/AVIRIS-NG
-counterpart exists for this scene), so this is a 1xN grid rather than a
-2-column comparison.
+"""California SHIFT-model trait maps, 4 traits in a 2x2 grid -- companion
+to step11 (Cape), but single-sensor (no EMIT/AVIRIS-NG counterpart exists
+for this scene).
+
+LMA was dropped (2026-08-28, Henry's review) -- it doesn't contribute to
+the report's overall story and isn't discussed anywhere else in the
+Cape/California comparison.
 
 No ground-truth check has been run for California in this project (see
 CLAUDE.md / report Section 7) -- unlike the Cape maps, there's no
@@ -17,7 +20,7 @@ not the absolute values.
 
 Veg-masked via step9's veg_mask (same fix as step11/12 -- apply the real
 NDVI-derived mask, not each trait's own diagnostic range_mask, so masking
-is consistent across all 5 panels).
+is consistent across all 4 panels).
 """
 import numpy as np
 import rasterio
@@ -37,7 +40,6 @@ TRAITS = [
     ("Calcium", "calcium", ("#f1eef6", "#74a9cf", "#023858")),
     ("Lignin", "lignin", ("#ffffd4", "#fe9929", "#8c2d04")),
     ("Cellulose", "cellulose", ("#fde725", "#21918c", "#440154")),
-    ("LMA", "LMA", ("#fcfdbf", "#f1605d", "#280b53")),
 ]
 
 
@@ -59,13 +61,11 @@ def load_masked(stem, veg_mask):
 
 def main():
     veg_mask = load_veg_mask()
-    ncols = 3
+    ncols = 2
     nrows = 2
-    fig, axes = plt.subplots(nrows, ncols, figsize=(6 * ncols, 5.2 * nrows))
-    fig.subplots_adjust(hspace=0.25, wspace=0.35, top=0.86)
+    fig, axes = plt.subplots(nrows, ncols, figsize=(7.5 * ncols, 6.2 * nrows))
+    fig.subplots_adjust(hspace=0.25, wspace=0.3, top=0.86)
     axes = axes.flatten()
-    for ax in axes[len(TRAITS):]:
-        ax.axis("off")
 
     for ax, (label, stem, colors) in zip(axes, TRAITS):
         arr = load_masked(stem, veg_mask)
@@ -84,10 +84,10 @@ def main():
         cmap.set_bad("lightgray")
         norm = BoundaryNorm([-0.5, 0.5, 1.5, 2.5], cmap.N)
         im = ax.imshow(binned, cmap=cmap, norm=norm)
-        ax.set_title(label, fontsize=16)
+        ax.set_title(label, fontsize=20)
         ax.set_xticks([]); ax.set_yticks([])
         cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, ticks=[0, 1, 2])
-        cbar.ax.set_yticklabels(["Low", "Med", "High"], fontsize=13)
+        cbar.ax.set_yticklabels(["Low", "Med", "High"], fontsize=16)
 
         print(f"{label}: n_valid={valid.size}, tercile cuts at {lo_cut:.2f}/{hi_cut:.2f} "
               f"(scene-relative, not an absolute/validated scale)")
@@ -96,7 +96,7 @@ def main():
         "California (SHIFT models) predicted trait patterns, 2025-04-07\n"
         "Relative Low/Med/High within this scene only -- no field validation for California in this project;\n"
         "gray = non-vegetated. Not a numerically validated product.",
-        fontsize=15,
+        fontsize=17,
     )
     out_path = FIGURES_DIR + "california_sidebyside_maps.png"
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
