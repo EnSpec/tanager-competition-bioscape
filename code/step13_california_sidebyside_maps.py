@@ -3,12 +3,17 @@ figure -- companion to step11 (Cape), but single-sensor (no EMIT/AVIRIS-NG
 counterpart exists for this scene), so this is a 1xN grid rather than a
 2-column comparison.
 
-Color scale per trait is each SHIFT model's own `field_min`/`field_max`
-(the training data's observed range, straight from the model json's
-`model_diagnostics`) -- the California equivalent of the Cape maps' CWM
-p5-p95 field-referenced scale (no CA ground-plot dataset has been pulled
-into this project the way the Cape CWM/GCFR ones were, so the model's own
-field range is the best available field-grounded reference).
+No ground-truth check has been run for California in this project (see
+CLAUDE.md / report Section 7) -- unlike the Cape maps, there's no
+field-referenced range to validate against here. Displaying continuous
+numeric values with a units-labeled colorbar would visually imply a
+precision this map doesn't have. Instead, each trait is binned into
+Low/Med/High terciles of ITS OWN valid-pixel distribution in this scene
+(2026-08-28, per Henry's review) -- this is a relative, within-scene
+pattern display only, explicitly not a numerically validated product.
+The qualitative pattern (e.g. agricultural/vineyard parcels reading
+higher nitrogen than surrounding chaparral) is the thing being shown,
+not the absolute values.
 
 Veg-masked via step9's veg_mask (same fix as step11/12 -- apply the real
 NDVI-derived mask, not each trait's own diagnostic range_mask, so masking
@@ -19,19 +24,20 @@ import rasterio
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap, BoundaryNorm
 
 TRAIT_OUTPUT_DIR = "/Volumes/Enspec/projects/BioScape/tanager_competition/trait_outputs/"
 FIGURES_DIR = "/Volumes/Enspec/projects/BioScape/tanager_competition/figures/"
 CA_STEM = "20250407_192247_40_4001_basic_sr_hdf5"
 VEG_MASK_TIF = TRAIT_OUTPUT_DIR + f"{CA_STEM}_ndvi_shadow_mask.tif"
 
-# (label, stem, units, field_min/field_max from the SHIFT model jsons, colormap)
+# (label, stem, 3-color low->high palette per trait's original color family)
 TRAITS = [
-    ("Nitrogen", "nitrogen", "mg/g", (3.80, 44.20), "YlGn"),
-    ("Calcium", "calcium", "mg/g", (0.80, 29.70), "PuBu"),
-    ("Lignin", "lignin", "mg/g", (10.20, 332.30), "YlOrBr"),
-    ("Cellulose", "cellulose", "mg/g", (47.00, 271.00), "viridis"),
-    ("LMA", "LMA", "g/m2", (43.89, 682.18), "magma"),
+    ("Nitrogen", "nitrogen", ("#f7fcb9", "#78c679", "#005a32")),
+    ("Calcium", "calcium", ("#f1eef6", "#74a9cf", "#023858")),
+    ("Lignin", "lignin", ("#ffffd4", "#fe9929", "#8c2d04")),
+    ("Cellulose", "cellulose", ("#fde725", "#21918c", "#440154")),
+    ("LMA", "LMA", ("#fcfdbf", "#f1605d", "#280b53")),
 ]
 
 
@@ -55,22 +61,35 @@ def main():
     veg_mask = load_veg_mask()
     fig, axes = plt.subplots(1, len(TRAITS), figsize=(4 * len(TRAITS), 5))
 
-    for ax, (label, stem, units, (lo, hi), cmap_name) in zip(axes, TRAITS):
-        cmap = matplotlib.colormaps[cmap_name].copy()
-        cmap.set_bad("lightgray")
-
+    for ax, (label, stem, colors) in zip(axes, TRAITS):
         arr = load_masked(stem, veg_mask)
-        im = ax.imshow(arr, cmap=cmap, vmin=lo, vmax=hi)
-        ax.set_title(f"{label}\n({units})", fontsize=11)
-        ax.set_xticks([]); ax.set_yticks([])
-        fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-
         valid = arr[~np.isnan(arr)]
-        print(f"{label}: n_valid={valid.size}, median={np.median(valid):.2f}" if valid.size else f"{label}: no valid pixels")
+        if valid.size == 0:
+            print(f"{label}: no valid pixels")
+            continue
+
+        # Tercile cutoffs from this trait's own valid-pixel distribution in
+        # this scene -- relative Low/Med/High, not an absolute/validated scale.
+        lo_cut, hi_cut = np.percentile(valid, [33.33, 66.67])
+        binned = np.digitize(arr, [lo_cut, hi_cut]).astype(float)
+        binned[np.isnan(arr)] = np.nan
+
+        cmap = ListedColormap(colors)
+        cmap.set_bad("lightgray")
+        norm = BoundaryNorm([-0.5, 0.5, 1.5, 2.5], cmap.N)
+        im = ax.imshow(binned, cmap=cmap, norm=norm)
+        ax.set_title(label, fontsize=11)
+        ax.set_xticks([]); ax.set_yticks([])
+        cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, ticks=[0, 1, 2])
+        cbar.ax.set_yticklabels(["Low", "Med", "High"])
+
+        print(f"{label}: n_valid={valid.size}, tercile cuts at {lo_cut:.2f}/{hi_cut:.2f} "
+              f"(scene-relative, not an absolute/validated scale)")
 
     fig.suptitle(
-        "California (SHIFT models) predicted trait maps, 2025-04-07\n"
-        "(color scale = each model's own field-data range; gray = non-vegetated or outside diagnostic range)",
+        "California (SHIFT models) predicted trait patterns, 2025-04-07\n"
+        "Relative Low/Med/High within this scene only -- no field validation for California in this project;\n"
+        "gray = non-vegetated. Not a numerically validated product.",
         fontsize=11,
     )
     out_path = FIGURES_DIR + "california_sidebyside_maps.png"

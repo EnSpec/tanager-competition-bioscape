@@ -123,7 +123,7 @@ NDVI-plus-NIR-brightness approach.
 
 ## 3. Cape Floristic Region trait maps
 
-To assess whether predictions made with the Tanager scene by applying the BioSCape models, we checked the predicted
+To assess whether predictions using the BioSCape models applied to the Tanager scene were realistic, we checked the predicted
 values against 646 the community-weighted-mean field plot values across the Cape Florisitc Region (none of which happen to fall inside this specific scene — see
 Section 6), Nitrogen and Lignin transfer best:
 
@@ -134,7 +134,7 @@ Section 6), Nitrogen and Lignin transfer best:
 | Calcium | 19.08 mg/g | 7.24 mg/g | 95.3% |
 | Cellulose | 101–107 mg/g | 161.63 mg/g | 53.1% |
 
-It's worth noting that the predictive performance of these traits weren't equallyt strong: BioSCape's own validation (independent AVIRIS-NG holdout
+It's worth noting that the predictive performance of these traits weren't equally strong: BioSCape's own validation (independent AVIRIS-NG holdout
 data, not cross-sensor; Frye et al., in review) reports Nitrogen and
 Calcium as more reliable models (NRMSE 0.109 and 0.081, Nash-Sutcliffe
 Efficiency 0.313 and 0.26), with Lignin and Cellulose already weaker
@@ -144,21 +144,24 @@ on its own; Cellulose's cross-sensor weakness is at least partly
 inherited rather than purely a transfer artifact.
 
 Lignin is the closest match to field values outright. Nitrogen and
-Calcium both pass their own model's internal sanity check on ~95% of
-vegetated pixels, but only Nitrogen's absolute values track the field
-data closely — Calcium runs roughly 2.6x high, a finding that only
-surfaced once we checked against real field values rather than trusting
-the model's own diagnostic range (which just confirms a prediction is
-in-distribution for the model, not realistic for the landscape). Cellulose
-is the weakest of the four: only about half of vegetated pixels pass even
-the model's own sanity check, so we're presenting it in tables with a
-clear caveat rather than as a headline map. LMA was dropped from the Cape
-analysis entirely — it produced physically impossible negative values
-across most of the scene (Section 7 explains the fix that solved this for
-California).
+Calcium both pass their own model's sanity check on ~95% of vegetated
+pixels — but that check is a low bar: it's literally just whether a
+prediction falls within the minimum and maximum values ever directly
+measured in the field training data, not a statistical confidence
+interval. Passing it means a prediction isn't more extreme than anything
+recorded on the ground; it says nothing about whether the value is close
+to correct. Nitrogen's absolute values do track the field data closely,
+but Calcium's don't — it runs roughly 2.6x high, a bias that only
+surfaced once we checked against real field values instead of relying on
+that basic bounds check. Cellulose is the weakest of the four: only about
+half of vegetated pixels pass even that undemanding bar, so we're
+presenting it in tables with a clear caveat rather than as a headline
+map. LMA was dropped from the Cape analysis entirely — it produced
+physically impossible negative values across most of the scene (Section 7
+explains the fix that solved this for California).
 
 *[Figure: `figures/20250504_..._Nitrogen_Lignin_Cellulose_ternary.tif` +
-legend — ternary composite, clear agricultural-field vs. natural-vegetation
+legend — Ternary composite of nitrogen, lignin and cellulose. clear agricultural-field vs. natural-vegetation
 contrast.]*
 
 ## 4. Cross-sensor comparison: EMIT
@@ -166,7 +169,7 @@ contrast.]*
 No EMIT overpass exists near Tanager's exact acquisition date — the
 nearest same-year passes were 71–101 days off-season. Checking day-of-year
 proximity across every EMIT acquisition ever made over this footprint
-(EMIT's ISS-hosted, non-repeating orbit means opportunistic coverage, not
+(EMIT's International Space Station (ISS)-hosted, non-repeating orbit means opportunistic coverage, not
 a fixed revisit) found a much closer seasonal match a year earlier
 (15 days off), but that pass's swath only clips 17% of the scene. We chose
 the best full-coverage option instead: 2026-03-02, 63 days off-season but
@@ -198,15 +201,24 @@ close to **uniform across the entire scene** — consistent with a
 systematic sensor/calibration difference rather than a landcover effect.
 Calcium's disagreement, by contrast, has real **spatial structure** — the
 southern part of the scene runs noticeably higher for EMIT than the
-north, which is not what you'd expect from simple noise.
+north, which is not what you'd expect from simple noise. A number of
+individual agricultural fields also stand out with especially large
+differences — plausibly real differences in crop type, management
+practice, or phenological stage between the two acquisition dates (ten
+months apart) rather than a sensor artifact. Field-level variability like
+that could also be contributing to the shape differences in the
+aggregate trait distributions (density plot above), not just a uniform
+cross-sensor offset.
 
-## 5. Cross-sensor comparison: airborne AVIRIS-NG
+## 5. Cross-sensor comparison: comparing airborne AVIRIS-NG to space-borne products
 
 BioSCape's own AVIRIS-NG airborne campaign flew directly under part of
 this Tanager scene in November 2023 — 30.6% of the footprint, across 24
-processed flight-line tiles. That imagery had never been mosaicked for
-this specific area before this project (it falls outside all six of
-BioSCape's existing named regional mosaics). We built that mosaic and
+processed flight-line tiles. JPL may have produced its own
+reflectance-level mosaics of this imagery, but it had never been
+mosaicked into trait-map products for this specific area before this
+project (it falls outside all six of BioSCape's existing named regional
+trait mosaics). We built that mosaic and
 compared it against the Tanager and EMIT predictions in the overlap area.
 
 For Nitrogen, all three independently-processed products land close
@@ -225,8 +237,7 @@ subregion in the Tanager and EMIT panels.]*
 We're presenting this three-way comparison for Nitrogen only. The
 precomputed AVIRIS-NG trait tiles use a different model variant
 (IR-only) than what we determined works best for Tanager/EMIT
-(Section 2) for three of the four traits — a real confound we'd rather
-flag than paper over with a comparison that looks cleaner than it is.
+(Section 2) for three of the four traits. This conflict is an interesting finding arising out of cross-sensor application and could arise from differences in atmospheric correction procedures and sensor calibration.
 
 ## 6. Validation, reframed
 
@@ -236,8 +247,13 @@ this scene's exact footprint:
 
 - **646 community-weighted-mean plots** (BioSCape's own field campaign):
   zero overlap. Nearest cluster is 17.5 km outside the scene edge.
-- **~2,500–9,500 individual leaf samples** (a broader regional survey,
-  GCFR Dimensions data paper): zero overlap. Nearest sample ~60 km away.
+- **~2,500–9,500 individual leaf samples** (a broader regional survey:
+  Frye et al., 2026, *Foliar Trait and Spectroscopy Data, Greater Cape
+  Floristic Region, South Africa*, ORNL DAAC,
+  https://doi.org/10.3334/ORNLDAAC/2482): zero overlap. Nearest sample
+  ~60 km away. *(Values used here are from a pre-release update to this
+  dataset; nitrogen is unchanged from the published version, though LMA
+  has been revised there and isn't used in this comparison.)*
 
 Neither dataset — one built specifically for this region's remote sensing
 validation, the other a much denser general survey — happens to fall
@@ -258,31 +274,24 @@ chemistry (same platform as BioSCape, an entirely separate campaign and
 region) — to a Tanager scene over the SHIFT study area, using the same
 FWHM-matching pipeline built for the Cape.
 
-One trait needed a real fix along the way: LMA and Calcium in the SHIFT
-models were fit on a square-root-transformed response (avoids negative
-predictions by construction). Implementing that inverse transform
-correctly — squaring each bootstrap prediction *before* averaging, not
-after, since that matters for a nonlinear transform — fixed LMA's Cape
-failure mode entirely: from 16% of pixels within a physically plausible
-range to 99.8%, with a sensible median (80.5 g/m²) instead of runaway
-negative values.
-
 *[Figure: `figures/california_sidebyside_maps.png` — all 5 traits,
 coherent mountain/valley/agricultural gradients, field-referenced color
 scale.]*
 
-No ground-truth check has been done for California in this project — this
-section demonstrates that the *methodology* generalizes across two
-different Mediterranean-climate ecosystems on two continents, using two
-independently-trained model libraries, not that the California predictions
-themselves are validated. We're stating that distinction explicitly rather
-than letting the strong visual result imply more than it should.
+No ground-truth check has been done for California in this project. What
+this section demonstrates is that the *methodology* generalizes across
+two different Mediterranean-climate ecosystems on two continents, using
+two independently-trained model libraries — not that the California
+predictions themselves are numerically validated. Short of field data, we
+can still ask whether the landscape pattern matches ecological
+expectations: agricultural and vineyard parcels visibly stand out from
+surrounding chaparral in the nitrogen map, consistent with fertilized
+cropland generally running higher in foliar nitrogen than native
+shrubland — a plausibility check, not a validation.
 
-## 8. The ask
+## 8. The ask: increasing Tanager coverage of data-rich biodiverse regions
 
-Winning teams in this competition get to directly influence which 30
-Tanager scenes Planet releases into the open catalog next. That's not a
-footnote — it's the reason this project is worth entering.
+Tanager is well positioned to become an invaluable resource as a producer of high quality of foliar trait maps across the globe. These trait maps can be used in a wide variety of contexts such as 
 
 **Two concrete requests, grounded in what this project found:**
 
@@ -337,6 +346,15 @@ spectroscopy: The SHIFT campaign. *Ecosphere*, 16(3), e70194.
 https://doi.org/10.1002/ecs2.70194 *(SHIFT's mission/campaign paper,
 parallel to Cardoso et al. 2025 for BioSCape — Ting Zheng, who confirmed
 the model training-data question, is a co-author.)*
+
+Frye, H., Aiello-Lammens, M. E., Euston-Brown, D., Jones, C. S., Kilroy
+Mollmann, H., Merow, C., Slingsby, J. A., van der Merwe, H., Turner, R.,
+Wilson, A. M., & Silander Jr, J. A. (2026). Foliar Trait and Spectroscopy
+Data, Greater Cape Floristic Region, South Africa (Version 1). ORNL
+Distributed Active Archive Center. https://doi.org/10.3334/ORNLDAAC/2482
+*(GCFR leaf-sample survey used in Section 6's regional check. Note:
+values used in this project came from a pre-release update ahead of this
+published V1 -- nitrogen unaffected, LMA revised but not used here.)*
 
 *(SHIFT field/reflectance dataset citation and Tanager platform citation
 still needed — see Open items below.)*
