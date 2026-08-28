@@ -90,9 +90,14 @@ def reproject_to_tanager(emit_path, tanager_transform, tanager_crs, tanager_shap
 
 def main():
     veg_mask = load_veg_mask()
-    fig, axes = plt.subplots(len(TRAITS), 2, figsize=(9, 4 * len(TRAITS)))
+    # 2 rows x 4 cols (two trait-pairs per row) instead of 4 rows x 2 cols --
+    # the tall 1-column layout left large blank gaps when scaled to page
+    # width in the report (2026-08-29, per Henry's review).
+    fig, axes = plt.subplots(2, 4, figsize=(18, 9))
 
-    for row, (label, stem, units, (lo, hi), cmap_name) in enumerate(TRAITS):
+    for i, (label, stem, units, (lo, hi), cmap_name) in enumerate(TRAITS):
+        row, pair = divmod(i, 2)
+        ax_t, ax_e = axes[row, pair * 2], axes[row, pair * 2 + 1]
         cmap = matplotlib.colormaps[cmap_name].copy()
         cmap.set_bad("lightgray")
 
@@ -102,25 +107,23 @@ def main():
         tanager_arr, tanager_transform, tanager_crs = load_masked(tanager_path, veg_mask)
         emit_arr = reproject_to_tanager(emit_path, tanager_transform, tanager_crs, tanager_arr.shape, veg_mask)
 
-        ax_t, ax_e = axes[row]
         im = ax_t.imshow(tanager_arr, cmap=cmap, vmin=lo, vmax=hi)
         ax_e.imshow(emit_arr, cmap=cmap, vmin=lo, vmax=hi)
 
-        ax_t.set_ylabel(f"{label}\n({units})", fontsize=11)
+        ax_t.set_title(f"{label} ({units})\nTanager", fontsize=13)
+        ax_e.set_title(f"{label} ({units})\nEMIT", fontsize=13)
         ax_t.set_xticks([]); ax_t.set_yticks([])
         ax_e.set_xticks([]); ax_e.set_yticks([])
-        if row == 0:
-            ax_t.set_title("Tanager (2025-05-04)", fontsize=12)
-            ax_e.set_title("EMIT (2026-03-02)", fontsize=12)
 
-        cbar = fig.colorbar(im, ax=[ax_t, ax_e], fraction=0.025, pad=0.02)
-        cbar.set_label(units, fontsize=9)
+        cbar = fig.colorbar(im, ax=[ax_t, ax_e], fraction=0.04, pad=0.03)
+        cbar.ax.tick_params(labelsize=10)
 
+    fig.subplots_adjust(hspace=0.3, wspace=0.25, top=0.86)
     fig.suptitle(
-        "Tanager vs. EMIT predicted trait maps, same AOI\n"
+        "Tanager (2025-05-04) vs. EMIT (2026-03-02) predicted trait maps, same AOI\n"
         "(color scale = region-wide CWM field-data p5-p95, not either sensor's own range;\n"
         "gray = non-vegetated (NDVI mask) or outside each model's diagnostic range)",
-        fontsize=11,
+        fontsize=14,
     )
     out_path = FIGURES_DIR + "tanager_vs_emit_sidebyside_maps.png"
     fig.savefig(out_path, dpi=150, bbox_inches="tight")

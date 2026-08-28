@@ -75,6 +75,7 @@ def main():
     ax.tick_params(axis="both", labelsize=15)
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2, fontsize=15)
     ax.set_xlim(376, 2500)
+    ax.set_ylim(4, 10)
     fig.tight_layout()
     fig.savefig(OUT_PATH, dpi=150, bbox_inches="tight")
     print(f"Wrote {OUT_PATH}")
