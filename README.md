@@ -8,8 +8,14 @@ maps, and validate against BioSCape ground sites in the same area.
 ![Ternary trait composite (Nitrogen/Lignin/Cellulose) over the Cape Floristic Region Tanager scene](writeup/figures/ternary_composite_preview.png)
 
 *Nitrogen (red) / Lignin (green) / Cellulose (blue) predicted from Tanager
-reflectance, veg-masked. See `writeup/report_draft.md` for the full
-write-up and `code/step5_ternary_map.py` for how this was built.*
+reflectance, veg-masked. Normalized to this scene's own value range for
+visual impact -- illustrative, not a quantitative figure (the report's
+actual analysis figures use field-data-referenced ranges instead, so
+trait bias stays visible rather than auto-stretched away; see
+CLAUDE.md's "Ternary map" for why that distinction matters). See
+`writeup/report_draft.md` for the full write-up,
+`code/step15_readme_banner_ternary.py` for this banner image, and
+`code/step5_ternary_map.py` for the report's field-referenced version.*
 
 ## Reproducibility note
 
@@ -35,6 +41,13 @@ input is. Breakdown of what's independently obtainable vs. internal:
   the method in full from the code, but can't literally re-run this
   pipeline end to end without either lab server access or the
   not-yet-public model files above.
+- **`CLAUDE.md` references below are dead links for external readers.**
+  This README and the run order below point to `CLAUDE.md` throughout
+  for extended detail on specific findings (it was this project's working
+  session log). That file is intentionally not part of this public repo
+  (kept locally, gitignored) since it's a candid internal log, not
+  written for an outside audience. The same substance for the headline
+  findings is written up properly in `writeup/report_draft.md` instead.
 
 ## Data
 
