@@ -40,13 +40,8 @@ example release scene over the Cape Floristic Region — and, once the
 methodology proved out, a second scene over California to test whether it
 generalizes across continents.
 
-The answer, in short: yes, with caveats that are themselves informative.
-Two independently-processed sensors (Tanager and EMIT) converge closely on
-the same predicted trait values over the same ground, ten months apart.
-BioSCape's own airborne data — flown directly under part of this scene —
-confirms it a third way. And the same cross-sensor methodology, applied to
-an entirely different set of airborne-trained models over California,
-produces coherent, physically plausible trait maps on the first attempt.
+The answer, in short: yes — and the caveats along the way turn out to be
+as informative as the successes.
 
 This kind of validation is exactly what upcoming spaceborne imaging
 spectroscopy missions — EAGLE-VSWIR among them — will need partners to
