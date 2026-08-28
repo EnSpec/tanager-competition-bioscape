@@ -54,7 +54,7 @@ answer now.
 
 | Source | Role | Coverage used |
 |---|---|---|
-| Tanager (`basic_sr_hdf5`) | Primary test platform | Cape scene (2025-05-04), California scene (2025-04-07) |
+| Tanager (`basic_sr_hdf5`, Guido et al. 2025) | Primary test platform | Cape scene (2025-05-04), California scene (2025-04-07) |
 | AVIRIS-NG (BioSCape campaign, Kovach et al. 2025) | Trait model training data + independent airborne validation | Nov 2023, Cape region |
 | EMIT | Independent spaceborne cross-check | 2026-03-02, same Cape area of interest (AOI) |
 | AVIRIS-NG (SHIFT campaign, Chadwick et al. 2025) | Trait model training data, California | Santa Barbara, exact dates TBC |
@@ -95,6 +95,14 @@ resampling, and not assuming either sensor's nominal spec sheet FWHM
 matches its as-flown FWHM (we pulled AVIRIS-NG's real per-band FWHM from
 an actual corrected flightline rather than the trait model's own metadata,
 which didn't carry it).
+
+![FWHM by wavelength, Tanager vs. AVIRIS-NG](figures/fwhm_comparison.png)
+
+*Figure 2. Real per-band FWHM by wavelength (not nominal spec-sheet
+values). Tanager runs wider than AVIRIS-NG across most of 400-1750 nm
+(62% of Tanager bands, shaded region), narrower above ~1750 nm --
+exactly the pattern behind the "can't sharpen" caveats reported for
+individual traits later in this section and Section 3.*
 
 **Model variant**: BioSCape's trait models come in two spectral-range
 flavors per trait — infrared-only (1000–2450 nm) and full-spectrum
@@ -151,18 +159,26 @@ to correct. Nitrogen's absolute values do track the field data closely,
 but Calcium's don't — it runs roughly 2.6x high, a bias that only
 surfaced once we checked against real field values instead of relying on
 that basic bounds check. Cellulose is the weakest of the four: only about
-half of vegetated pixels pass even that undemanding bar, so we're
-presenting it in tables with a clear caveat rather than as a headline
-map. LMA was dropped from the Cape analysis entirely — it produced
-physically impossible negative values across most of the scene (Section 7
-explains the fix that solved this for California).
+half of vegetated pixels pass even that undemanding bar. We keep it in
+the table above with that caveat, but leave it out of the ternary
+composite below in favor of Calcium — not a clean substitution (Calcium
+carries its own known high bias, discussed above), but Calcium and
+Cellulose are also plausibly biologically linked: calcium cross-links
+pectin in the cell wall matrix via calcium-pectate bridges, alongside
+cellulose's fibrillar backbone, so pairing Calcium with Lignin/Nitrogen
+here is a defensible choice rather than an arbitrary one. LMA was
+dropped from the Cape analysis entirely — it produced physically
+impossible negative values across most of the scene (Section 7 explains
+the fix that solved this for California).
 
-![Ternary composite: Nitrogen (red) / Lignin (green) / Cellulose (blue), Tanager, field-referenced ranges](figures/ternary_field_referenced.png)
+![Ternary composite: Nitrogen (red) / Lignin (green) / Calcium (blue), Tanager, field-referenced ranges](figures/ternary_field_referenced.png)
 
-*Figure 2. Ternary composite (Nitrogen/Lignin/Cellulose), normalized to
+*Figure 3. Ternary composite (Nitrogen/Lignin/Calcium), normalized to
 region-wide CWM field-data ranges (not the scene's own range -- keeps
-trait bias visible rather than auto-stretched away). Clear
-agricultural-field vs. natural-vegetation contrast.*
+trait bias visible rather than auto-stretched away). Calcium's own high
+bias means the blue channel runs toward saturation almost everywhere --
+a real tradeoff of this choice, visible here rather than hidden.
+Agricultural-field vs. natural-vegetation contrast is still clear.*
 
 ## 4. Cross-sensor comparison: EMIT
 
@@ -193,19 +209,19 @@ either satellite.
 
 ![Tanager vs. EMIT trait maps, all 4 traits, same field-referenced color scale](figures/tanager_vs_emit_sidebyside_maps.png)
 
-*Figure 3. Tanager vs. EMIT predicted trait maps, same AOI, same
+*Figure 4. Tanager vs. EMIT predicted trait maps, same AOI, same
 field-referenced color scale per trait. EMIT reprojected onto Tanager's
 exact grid.*
 
 ![Tanager vs. EMIT predicted value distributions, density overlay](figures/emit_vs_tanager_density.png)
 
-*Figure 4. Density-distribution comparison (KDE), same AOI as Figure 3 --
+*Figure 5. Density-distribution comparison (KDE), same AOI as Figure 4 --
 Nitrogen and Cellulose overlap closely; Calcium and Lignin show a visible
 rightward shift for EMIT.*
 
 ![Tanager vs. EMIT per-pixel difference map](figures/tanager_emit_difference_map.png)
 
-*Figure 5. Per-pixel difference (EMIT minus Tanager), all 4 traits.*
+*Figure 6. Per-pixel difference (EMIT minus Tanager), all 4 traits.*
 
 The difference map is worth a closer look on its own: Lignin's offset is
 close to **uniform across the entire scene** — consistent with a
@@ -243,7 +259,7 @@ together:
 
 ![Nitrogen: Tanager vs. EMIT vs. AVIRIS-NG airborne, three-panel comparison](figures/nitrogen_tanager_emit_aviris.png)
 
-*Figure 6. Nitrogen predicted by three independently-processed products
+*Figure 7. Nitrogen predicted by three independently-processed products
 over the same AOI -- Tanager, EMIT, and BioSCape's own airborne
 AVIRIS-NG (30.6% scene coverage, shown as a narrow strip at its actual
 footprint). The AVIRIS-NG strip's spatial pattern visibly echoes the
@@ -291,7 +307,7 @@ FWHM-matching pipeline built for the Cape.
 
 ![California SHIFT-model predicted trait patterns, all 5 traits, Low/Med/High](figures/california_sidebyside_maps.png)
 
-*Figure 7. California (SHIFT models), all 5 traits, relabeled to
+*Figure 8. California (SHIFT models), all 5 traits, relabeled to
 relative Low/Med/High terciles per trait (scene-relative, not a
 numeric/field-referenced scale) specifically so this reads as a pattern
 check rather than a validated product. Clear mountain/valley/
@@ -374,29 +390,38 @@ Distributed Active Archive Center. https://doi.org/10.3334/ORNLDAAC/2482
 values used in this project came from a pre-release update ahead of this
 published V1 -- nitrogen unaffected, LMA revised but not used here.)*
 
-*(Tanager platform citation still needed — see Open items below.)*
+Guido, J., Keremedjiev, M., Mason, J., Duren, R., Lai-Norling, J.,
+Seaman, K., & Green, R. (2025, August). Advanced hyperspectral imaging
+from orbit: achievements and challenges from the first year of
+Tanager-1. In Proceedings of the Small Satellite Conference, Salt Lake
+City, UT, USA (pp. 10-13).
 
 ## Appendix: Figure inventory
 
 | # | Figure | Section | File |
 |---|---|---|---|
 | 1 | Flight-box coverage + sample sites | 1 | `figures/bioscape_sampling.png` (vector source: Enspec `figures/bioscape_sampling.pdf`) |
-| 2 | Cape ternary composite (Nitrogen/Lignin/Cellulose), field-referenced | 3 | `figures/ternary_field_referenced.png` |
-| 3 | Tanager vs. EMIT, all 4 traits, side by side | 4 | `figures/tanager_vs_emit_sidebyside_maps.png` |
-| 4 | Tanager vs. EMIT, density distributions | 4 | `figures/emit_vs_tanager_density.png` |
-| 5 | Tanager vs. EMIT, per-pixel difference | 4 | `figures/tanager_emit_difference_map.png` |
-| 6 | Nitrogen: Tanager vs. EMIT vs. AVIRIS-NG | 5 | `figures/nitrogen_tanager_emit_aviris.png` |
-| 7 | California, all 5 traits (Low/Med/High) | 7 | `figures/california_sidebyside_maps.png` |
+| 2 | FWHM by wavelength, Tanager vs. AVIRIS-NG | 2 | `figures/fwhm_comparison.png` |
+| 3 | Cape ternary composite (Nitrogen/Lignin/Calcium), field-referenced | 3 | `figures/ternary_field_referenced.png` |
+| 4 | Tanager vs. EMIT, all 4 traits, side by side | 4 | `figures/tanager_vs_emit_sidebyside_maps.png` |
+| 5 | Tanager vs. EMIT, density distributions | 4 | `figures/emit_vs_tanager_density.png` |
+| 6 | Tanager vs. EMIT, per-pixel difference | 4 | `figures/tanager_emit_difference_map.png` |
+| 7 | Nitrogen: Tanager vs. EMIT vs. AVIRIS-NG | 5 | `figures/nitrogen_tanager_emit_aviris.png` |
+| 8 | California, all 5 traits (Low/Med/High) | 7 | `figures/california_sidebyside_maps.png` |
 
 All paths are relative to `writeup/`; every file above is committed to
 this repo under `writeup/figures/`.
 
 ## Appendix: Open items before submission
 
-- [ ] Decide whether to include the FWHM-curve-comparison figure
-      mentioned in the outline (Section 2) — not yet built.
-- [ ] Cellulose: confirm final call on presenting as a caveated table row
-      only (recommended) vs. dropping entirely.
+- [x] FWHM-curve-comparison figure built and added (Figure 2, Section 2):
+      real per-band FWHM, Tanager (this scene) vs. AVIRIS-NG (BioSCape
+      flightline) — Tanager 5.20-6.81nm, AVIRIS-NG 5.57-6.03nm, 62% of
+      Tanager bands wider, crossover ~1750nm. Worth including.
+- [x] Cellulose dropped from the ternary composite (Figure 3, now
+      Nitrogen/Lignin/Calcium) but kept as a caveated table row — weakest
+      of the four kept traits, passing its own diagnostic range check on
+      only 53% of vegetated pixels.
 - [ ] Tighten Section 1/8 for final word count once overall length target
       is known.
 - [x] BioSCape/AVIRIS-NG citations and DOI added (Cardoso et al. 2025,
@@ -418,8 +443,8 @@ this repo under `writeup/figures/`.
       2023, SHIFT AVIRIS-NG L2A Unrectified Surface Reflectance V1, ORNL
       DAAC, DOI 10.3334/ORNLDAAC/2376 -- Ting confirmed this is the
       exact product used for training, matching the DAAC documentation.
-- [ ] Still need: a Tanager platform citation.
-- [x] All report figures now actually embedded as images (Figures 2-7),
+- [x] Tanager platform citation added (Guido et al. 2025, Small Satellite Conference).
+- [x] All report figures now actually embedded as images (Figures 2-8),
       not just described in bracketed placeholder text -- copied from
       Enspec into writeup/figures/, ternary composite rendered fresh
       (field-referenced version, distinct from the README's

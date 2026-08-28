@@ -5,17 +5,21 @@ apply existing BioSCape-trained foliar trait models (Cape Floristic Region,
 South Africa) to Planet's example Tanager-1 release-2 scene, produce trait
 maps, and validate against BioSCape ground sites in the same area.
 
-![Ternary trait composite (Nitrogen/Lignin/Cellulose) over the Cape Floristic Region Tanager scene](writeup/figures/ternary_composite_preview.png)
+![Ternary trait composite (Nitrogen/Lignin/Calcium) over the Cape Floristic Region Tanager scene](writeup/figures/ternary_composite_preview.png)
 
-*Nitrogen (red) / Lignin (green) / Cellulose (blue) predicted from Tanager
+*Nitrogen (red) / Lignin (green) / Calcium (blue) predicted from Tanager
 reflectance, veg-masked. Normalized to this scene's own value range for
 visual impact -- illustrative, not a quantitative figure (the report's
 actual analysis figures use field-data-referenced ranges instead, so
 trait bias stays visible rather than auto-stretched away; see
-CLAUDE.md's "Ternary map" for why that distinction matters). See
-`writeup/report_draft.md` for the full write-up,
-`code/step15_readme_banner_ternary.py` for this banner image, and
-`code/step5_ternary_map.py` for the report's field-referenced version.*
+CLAUDE.md's "Ternary map" for why that distinction matters). Calcium
+stands in for Cellulose here (Cellulose only passes its own diagnostic
+range check on 53% of vegetated pixels) -- plausibly biologically
+linked, since calcium cross-links pectin in the cell wall alongside
+cellulose's structural role there. See `writeup/report_draft.md` for the
+full write-up, `code/step15_readme_banner_ternary.py` for this banner
+image, and `code/step5_ternary_map.py` for the report's field-referenced
+version.*
 
 ## Reproducibility note
 

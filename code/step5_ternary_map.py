@@ -40,10 +40,20 @@ NDVI_MASK_TIF = TRAIT_OUTPUT_DIR + f"{STEM}_ndvi_shadow_mask.tif"
 # biased the underlying predictions are (Calcium's ~2.6x high bias would
 # just get quietly renormalized away). All FULL-uvf -- see step2's
 # comment / CLAUDE.md "IR-uvf vs FULL-uvf: a real detour" for why IR-uvf
-# was tried and reverted. Calcium is included in TRAIT_RANGES but its
-# known high bias means it'll skew toward its own channel's bright end
-# almost everywhere; Nitrogen/Lignin/Cellulose is the more defensible
-# three-trait default.
+# was tried and reverted.
+#
+# Default is Nitrogen/Lignin/Calcium, not Cellulose (2026-08-28, Henry's
+# call): Cellulose only passes its own diagnostic range check on 53% of
+# vegetated pixels (weakest of the four kept traits by a wide margin --
+# see CLAUDE.md/report Section 3), so it's dropped from this headline
+# figure and kept as a caveated table row instead. Calcium's own known
+# high bias (~2.6x vs. field data) means it'll skew toward its channel's
+# bright end almost everywhere in this scene -- a real tradeoff, not a
+# clean win -- but Calcium and Cellulose are also plausibly biologically
+# linked (Ca cross-links pectin in the cell wall matrix via calcium-
+# pectate bridges, alongside cellulose's fibrillar backbone), which is
+# at least a defensible reason to pair Calcium with Lignin/Nitrogen here
+# rather than an arbitrary swap.
 TRAIT_RANGES = {
     "Nitrogen": (4.71, 23.51),
     "Calcium": (1.51, 16.67),
@@ -52,7 +62,7 @@ TRAIT_RANGES = {
 }
 
 # R / G / B corner assignment
-TRAIT1, TRAIT2, TRAIT3 = "Nitrogen", "Lignin", "Cellulose"
+TRAIT1, TRAIT2, TRAIT3 = "Nitrogen", "Lignin", "Calcium"
 
 OUTPUT_TIF = TRAIT_OUTPUT_DIR + f"{STEM}_{TRAIT1}_{TRAIT2}_{TRAIT3}_ternary.tif"
 OUTPUT_LEGEND = TRAIT_OUTPUT_DIR + f"{STEM}_{TRAIT1}_{TRAIT2}_{TRAIT3}_ternary_legend.png"

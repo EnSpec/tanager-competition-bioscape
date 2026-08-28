@@ -1,4 +1,4 @@
-"""README banner ternary composite -- Nitrogen/Lignin/Cellulose, same
+"""README banner ternary composite -- Nitrogen/Lignin/Calcium, same
 traits as step5_ternary_map.py's default, but normalized differently on
 purpose.
 
@@ -15,11 +15,15 @@ read as implying anything about absolute trait accuracy. It's a
 landscape-pattern illustration, not a quantitative figure, and the
 README caption says so explicitly.
 
-Cellulose's own scene range came out skewed (2nd/98th percentile roughly
--111 to 230 mg/g) reflecting how noisy this trait's predictions are here
-(see CLAUDE.md/report Section 3) -- some of the magenta speckling in the
-agricultural area is plausibly Cellulose noise, not pure signal. Worth
-knowing even though the image reads well.
+Originally used Cellulose as the third channel; swapped to Calcium
+(2026-08-28, Henry's call, same swap made in step5) since Cellulose only
+passes its own diagnostic range check on 53% of vegetated pixels (see
+CLAUDE.md/report Section 3) and its scene range here was skewed by that
+noise (2nd/98th percentile roughly -111 to 230 mg/g). Calcium's scene
+range is much better-behaved (8.95-25.86 mg/g) and Calcium/Cellulose are
+plausibly biologically linked (Ca cross-links pectin in the cell wall,
+alongside cellulose's structural role there) -- a defensible pairing
+with Lignin/Nitrogen, not an arbitrary swap.
 """
 import numpy as np
 import rasterio
@@ -30,7 +34,7 @@ import matplotlib.pyplot as plt
 TRAIT_OUTPUT_DIR = "/Volumes/Enspec/projects/BioScape/tanager_competition/trait_outputs/"
 STEM = "20250504_092952_87_4001_basic_sr_hdf5"
 
-TRAITS = ("Nitrogen_merged_cwm_iter_mean", "Lignin_recal_mg_g_cwm_iter_mean", "Cellulose_mg_g_cwm_iter_mean")
+TRAITS = ("Nitrogen_merged_cwm_iter_mean", "Lignin_recal_mg_g_cwm_iter_mean", "Calcium_mg_per_g_cwm_iter_mean")
 OUT_PATH = "writeup/figures/ternary_composite_preview.png"
 
 
