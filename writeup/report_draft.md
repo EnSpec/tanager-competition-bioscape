@@ -62,7 +62,7 @@ answer now.
 | Tanager (`basic_sr_hdf5`) | Primary test platform | Cape scene (2025-05-04), California scene (2025-04-07) |
 | AVIRIS-NG (BioSCape campaign, Kovach et al. 2025) | Trait model training data + independent airborne validation | Nov 2023, Cape region |
 | EMIT | Independent spaceborne cross-check | 2026-03-02, same Cape area of interest (AOI) |
-| AVIRIS-NG (SHIFT campaign) | Trait model training data, California | Santa Barbara, exact dates TBC |
+| AVIRIS-NG (SHIFT campaign, Chadwick et al. 2025) | Trait model training data, California | Santa Barbara, exact dates TBC |
 
 † *SHIFT background: [earthdata.nasa.gov/data/projects/shift](https://www.earthdata.nasa.gov/data/projects/shift). Source datasets: [AVIRIS-NG plant trait mosaics](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-avng-plant-trait-mosaics-2453-1), [foliar chemical analysis](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-foliar-chemical-analysis-2337-1), [dried/ground leaf reflectance](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-driedground-leaf-reflec-2244-1). (The California model json carries a `spectrometer: "avc+neon"` metadata tag; confirmed with Ting, who provided the model, that this is a stale artifact from a script originally built for WDTS data, left in by mistake — the SHIFT model is trained on SHIFT field data only, same AVIRIS-NG platform as BioSCape.)*
 
@@ -79,8 +79,8 @@ iterations to yield 200 models per trait — the mean prediction and the
 standard deviation across those 200 iterations are what this project
 treats as each trait's mean and uncertainty layers. A second,
 independently-trained model set from the SHIFT campaign (Santa Barbara,
-CA) — same AVIRIS-NG platform, different campaign and field dataset —
-was used for the California test.
+CA; Chadwick et al., 2025) — same AVIRIS-NG platform, different campaign
+and field dataset — was used for the California test.
 
 **The core technical problem**: Tanager's `basic_sr_hdf5` format is not
 readable by existing trait-modeling pipelines (HyTools, built for this
@@ -134,11 +134,9 @@ Section 6), Nitrogen and Lignin transfer best:
 | Calcium | 19.08 mg/g | 7.24 mg/g | 95.3% |
 | Cellulose | 101–107 mg/g | 161.63 mg/g | 53.1% |
 
-It's worth noting these traits weren't equally strong same-sensor models
-to begin with: BioSCape's own validation (independent AVIRIS-NG holdout
+It's worth noting that the predictive performance of these traits weren't equallyt strong: BioSCape's own validation (independent AVIRIS-NG holdout
 data, not cross-sensor; Frye et al., in review) reports Nitrogen and
-Calcium as
-the more reliable models here (NRMSE 0.109 and 0.081, Nash-Sutcliffe
+Calcium as more reliable models (NRMSE 0.109 and 0.081, Nash-Sutcliffe
 Efficiency 0.313 and 0.26), with Lignin and Cellulose already weaker
 same-sensor (NRMSE 0.192 and 0.164, NSE 0.182 and 0.247). Lignin's strong
 cross-sensor field match despite a middling same-sensor score is notable
@@ -254,11 +252,11 @@ rich — and the current Tanager coverage still doesn't reach it.**
 
 To test whether this cross-sensor methodology is Cape-specific or
 general, we applied a second, independently-trained model set — from
-NASA JPL's SHIFT campaign (Santa Barbara, CA), trained on AVIRIS-NG
-reflectance and SHIFT's own field-collected foliar chemistry (same
-platform as BioSCape, an entirely separate campaign and region) — to a
-Tanager scene over the SHIFT study area, using the same FWHM-matching
-pipeline built for the Cape.
+NASA JPL's SHIFT campaign (Santa Barbara, CA; Chadwick et al., 2025),
+trained on AVIRIS-NG reflectance and SHIFT's own field-collected foliar
+chemistry (same platform as BioSCape, an entirely separate campaign and
+region) — to a Tanager scene over the SHIFT study area, using the same
+FWHM-matching pipeline built for the Cape.
 
 One trait needed a real fix along the way: LMA and Calcium in the SHIFT
 models were fit on a square-root-transformed response (avoids negative
@@ -332,7 +330,15 @@ IR-vs-full-spectrum comparison, and vegetation masking thresholds
 referenced in Sections 2-3. Expected public by the time this competition
 is reviewed, per Henry.)*
 
-*(SHIFT campaign field/reflectance data and Tanager platform citations
+Chadwick, K. D., Davis, F., Miner, K. R., Pavlick, R., Reynolds, M.,
+Townsend, P. A., Brodrick, P. G., et al. (2025). Unlocking ecological
+insights from sub-seasonal visible-to-shortwave infrared imaging
+spectroscopy: The SHIFT campaign. *Ecosphere*, 16(3), e70194.
+https://doi.org/10.1002/ecs2.70194 *(SHIFT's mission/campaign paper,
+parallel to Cardoso et al. 2025 for BioSCape — Ting Zheng, who confirmed
+the model training-data question, is a co-author.)*
+
+*(SHIFT field/reflectance dataset citation and Tanager platform citation
 still needed — see Open items below.)*
 
 ## Appendix: Figure inventory
@@ -366,10 +372,13 @@ still needed — see Open items below.)*
       script, left in by mistake — SHIFT model is trained on SHIFT field
       data + AVIRIS-NG only, same platform as BioSCape. Fixed everywhere
       it was mentioned (sensors table, Trait models paragraph, Section 7).
-- [ ] Still need: formal SHIFT field/reflectance dataset citation (the
-      four earthdata.nasa.gov catalog URLs in the sensors table footnote
-      are candidates, not yet confirmed as the exact source) and a
-      Tanager platform citation.
+- [x] SHIFT campaign/mission citation added (Chadwick et al. 2025,
+      Ecosphere — Ting Zheng, who confirmed the training-data question,
+      is a co-author).
+- [ ] Still need: a citation for the specific SHIFT field/reflectance
+      dataset(s) underlying this model (the four earthdata.nasa.gov
+      catalog URLs in the sensors table footnote are candidates, not yet
+      confirmed as the exact source) and a Tanager platform citation.
 - [x] Flight-box/sample-site figure embedded (Section 1, Figure 1) —
       `writeup/figures/bioscape_sampling.png`, sourced from Henry's
       `bioscape_sampling.pdf`. PNG committed to the repo for
