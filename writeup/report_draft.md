@@ -1,10 +1,5 @@
 # Cross-Sensor Transfer of Airborne Trait Models to Tanager: A BioSCape Case Study
 
-*Draft — 2026-08-27. Numbers and figure references below are pulled directly
-from this project's `CLAUDE.md`/pipeline outputs; every figure referenced
-already exists in `figures/` and `trait_outputs/`. Not yet copy-edited for
-submission tone/length — flag anything that reads rough.*
-
 ---
 
 ## 1. Can Tanager Deliver Airborne-Quality Foliar Trait Maps From Orbit?
@@ -64,7 +59,7 @@ answer now.
 | EMIT | Independent spaceborne cross-check | 2026-03-02, same Cape area of interest (AOI) |
 | AVIRIS-NG (SHIFT campaign, Chadwick et al. 2025) | Trait model training data, California | Santa Barbara, exact dates TBC |
 
-† *SHIFT background: [earthdata.nasa.gov/data/projects/shift](https://www.earthdata.nasa.gov/data/projects/shift). Source datasets: [AVIRIS-NG plant trait mosaics](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-avng-plant-trait-mosaics-2453-1), [foliar chemical analysis](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-foliar-chemical-analysis-2337-1), [dried/ground leaf reflectance](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-driedground-leaf-reflec-2244-1). (The California model json carries a `spectrometer: "avc+neon"` metadata tag; confirmed with Ting, who provided the model, that this is a stale artifact from a script originally built for WDTS data, left in by mistake — the SHIFT model is trained on SHIFT field data only, same AVIRIS-NG platform as BioSCape.)*
+† *SHIFT background: [earthdata.nasa.gov/data/projects/shift](https://www.earthdata.nasa.gov/data/projects/shift). Imagery used for training confirmed by Ting (matches DAAC documentation): Brodrick et al., 2023, SHIFT: AVIRIS-NG L2A Unrectified Surface Reflectance V1, ORNL DAAC, https://doi.org/10.3334/ORNLDAAC/2376. (The California model json also carries a `spectrometer: "avc+neon"` metadata tag; confirmed with Ting, who provided the model, that this is a stale artifact from a script originally built for WDTS data, left in by mistake — the SHIFT model is trained on SHIFT field data only, same AVIRIS-NG platform as BioSCape.)*
 
 **Trait models**: BioSCape's PLSR (partial least squares regression)
 foliar trait models — Nitrogen, Calcium, Lignin, Cellulose, and leaf mass
@@ -162,9 +157,12 @@ map. LMA was dropped from the Cape analysis entirely — it produced
 physically impossible negative values across most of the scene (Section 7
 explains the fix that solved this for California).
 
-*[Figure: `figures/20250504_..._Nitrogen_Lignin_Cellulose_ternary.tif` +
-legend — Ternary composite of nitrogen, lignin and cellulose. clear agricultural-field vs. natural-vegetation
-contrast.]*
+![Ternary composite: Nitrogen (red) / Lignin (green) / Cellulose (blue), Tanager, field-referenced ranges](figures/ternary_field_referenced.png)
+
+*Figure 2. Ternary composite (Nitrogen/Lignin/Cellulose), normalized to
+region-wide CWM field-data ranges (not the scene's own range -- keeps
+trait bias visible rather than auto-stretched away). Clear
+agricultural-field vs. natural-vegetation contrast.*
 
 ## 4. Cross-sensor comparison: EMIT
 
@@ -193,10 +191,21 @@ bias against field data (Section 3) — suggesting these are properties of
 the cross-sensor transfer methodology itself, not something specific to
 either satellite.
 
-*[Figures: `figures/tanager_vs_emit_sidebyside_maps.png` (all 4 traits,
-same field-referenced color scale), `figures/emit_vs_tanager_density.png`
-(distribution overlays), `figures/tanager_emit_difference_map.png`
-(per-pixel EMIT−Tanager).]*
+![Tanager vs. EMIT trait maps, all 4 traits, same field-referenced color scale](figures/tanager_vs_emit_sidebyside_maps.png)
+
+*Figure 3. Tanager vs. EMIT predicted trait maps, same AOI, same
+field-referenced color scale per trait. EMIT reprojected onto Tanager's
+exact grid.*
+
+![Tanager vs. EMIT predicted value distributions, density overlay](figures/emit_vs_tanager_density.png)
+
+*Figure 4. Density-distribution comparison (KDE), same AOI as Figure 3 --
+Nitrogen and Cellulose overlap closely; Calcium and Lignin show a visible
+rightward shift for EMIT.*
+
+![Tanager vs. EMIT per-pixel difference map](figures/tanager_emit_difference_map.png)
+
+*Figure 5. Per-pixel difference (EMIT minus Tanager), all 4 traits.*
 
 The difference map is worth a closer look on its own: Lignin's offset is
 close to **uniform across the entire scene** — consistent with a
@@ -232,9 +241,13 @@ together:
 | EMIT | 14.58 |
 | AVIRIS-NG (airborne) | 16.92 |
 
-*[Figure: `figures/nitrogen_tanager_emit_aviris.png` — three-panel
-comparison; the AVIRIS-NG strip's spatial pattern visibly echoes the same
-subregion in the Tanager and EMIT panels.]*
+![Nitrogen: Tanager vs. EMIT vs. AVIRIS-NG airborne, three-panel comparison](figures/nitrogen_tanager_emit_aviris.png)
+
+*Figure 6. Nitrogen predicted by three independently-processed products
+over the same AOI -- Tanager, EMIT, and BioSCape's own airborne
+AVIRIS-NG (30.6% scene coverage, shown as a narrow strip at its actual
+footprint). The AVIRIS-NG strip's spatial pattern visibly echoes the
+same subregion in the Tanager and EMIT panels.*
 
 We're presenting this three-way comparison for Nitrogen only. The
 precomputed AVIRIS-NG trait tiles use a different model variant
@@ -276,9 +289,13 @@ chemistry (same platform as BioSCape, an entirely separate campaign and
 region) — to a Tanager scene over the SHIFT study area, using the same
 FWHM-matching pipeline built for the Cape.
 
-*[Figure: `figures/california_sidebyside_maps.png` — all 5 traits,
-coherent mountain/valley/agricultural gradients, field-referenced color
-scale.]*
+![California SHIFT-model predicted trait patterns, all 5 traits, Low/Med/High](figures/california_sidebyside_maps.png)
+
+*Figure 7. California (SHIFT models), all 5 traits, relabeled to
+relative Low/Med/High terciles per trait (scene-relative, not a
+numeric/field-referenced scale) specifically so this reads as a pattern
+check rather than a validated product. Clear mountain/valley/
+agricultural contrast still visible, e.g. Nitrogen.*
 
 No ground-truth check has been done for California in this project. What
 this section demonstrates is that the *methodology* generalizes across
@@ -339,6 +356,15 @@ https://doi.org/10.1002/ecs2.70194 *(SHIFT's mission/campaign paper,
 parallel to Cardoso et al. 2025 for BioSCape — Ting Zheng, who confirmed
 the model training-data question, is a co-author.)*
 
+Brodrick, P. G., Pavlick, R., Bernas, M., Chapman, J. W., Eckert, R.,
+Helmlinger, M., Hess-Flores, M., Rios, L. M., Schneider, F. D., Smyth,
+M. M., Eastwood, M., Green, R. O., Thompson, D. R., Chadwick, K. D., &
+Schimel, D. S. (2023). SHIFT: AVIRIS-NG L2A Unrectified Surface
+Reflectance Version 1. ORNL Distributed Active Archive Center.
+https://doi.org/10.3334/ORNLDAAC/2376 *(The specific AVIRIS-NG
+reflectance product used to train the SHIFT trait models applied in
+Section 7 -- confirmed by Ting, matches the DAAC documentation.)*
+
 Frye, H., Aiello-Lammens, M. E., Euston-Brown, D., Jones, C. S., Kilroy
 Mollmann, H., Merow, C., Slingsby, J. A., van der Merwe, H., Turner, R.,
 Wilson, A. M., & Silander Jr, J. A. (2026). Foliar Trait and Spectroscopy
@@ -348,19 +374,22 @@ Distributed Active Archive Center. https://doi.org/10.3334/ORNLDAAC/2482
 values used in this project came from a pre-release update ahead of this
 published V1 -- nitrogen unaffected, LMA revised but not used here.)*
 
-*(SHIFT field/reflectance dataset citation and Tanager platform citation
-still needed — see Open items below.)*
+*(Tanager platform citation still needed — see Open items below.)*
 
 ## Appendix: Figure inventory
 
-| Figure | File |
-|---|---|
-| Cape ternary composite (Nitrogen/Lignin/Cellulose) | `trait_outputs/20250504_..._Nitrogen_Lignin_Cellulose_ternary.tif` + legend |
-| Tanager vs. EMIT, all 4 traits, side by side | `figures/tanager_vs_emit_sidebyside_maps.png` |
-| Tanager vs. EMIT, density distributions | `figures/emit_vs_tanager_density.png` |
-| Tanager vs. EMIT, per-pixel difference | `figures/tanager_emit_difference_map.png` |
-| Nitrogen: Tanager vs. EMIT vs. AVIRIS-NG | `figures/nitrogen_tanager_emit_aviris.png` |
-| California, all 5 traits | `figures/california_sidebyside_maps.png` |
+| # | Figure | Section | File |
+|---|---|---|---|
+| 1 | Flight-box coverage + sample sites | 1 | `figures/bioscape_sampling.png` (vector source: Enspec `figures/bioscape_sampling.pdf`) |
+| 2 | Cape ternary composite (Nitrogen/Lignin/Cellulose), field-referenced | 3 | `figures/ternary_field_referenced.png` |
+| 3 | Tanager vs. EMIT, all 4 traits, side by side | 4 | `figures/tanager_vs_emit_sidebyside_maps.png` |
+| 4 | Tanager vs. EMIT, density distributions | 4 | `figures/emit_vs_tanager_density.png` |
+| 5 | Tanager vs. EMIT, per-pixel difference | 4 | `figures/tanager_emit_difference_map.png` |
+| 6 | Nitrogen: Tanager vs. EMIT vs. AVIRIS-NG | 5 | `figures/nitrogen_tanager_emit_aviris.png` |
+| 7 | California, all 5 traits (Low/Med/High) | 7 | `figures/california_sidebyside_maps.png` |
+
+All paths are relative to `writeup/`; every file above is committed to
+this repo under `writeup/figures/`.
 
 ## Appendix: Open items before submission
 
@@ -385,10 +414,20 @@ still needed — see Open items below.)*
 - [x] SHIFT campaign/mission citation added (Chadwick et al. 2025,
       Ecosphere — Ting Zheng, who confirmed the training-data question,
       is a co-author).
-- [ ] Still need: a citation for the specific SHIFT field/reflectance
-      dataset(s) underlying this model (the four earthdata.nasa.gov
-      catalog URLs in the sensors table footnote are candidates, not yet
-      confirmed as the exact source) and a Tanager platform citation.
+- [x] SHIFT imagery citation confirmed and added: Brodrick et al.
+      2023, SHIFT AVIRIS-NG L2A Unrectified Surface Reflectance V1, ORNL
+      DAAC, DOI 10.3334/ORNLDAAC/2376 -- Ting confirmed this is the
+      exact product used for training, matching the DAAC documentation.
+- [ ] Still need: a Tanager platform citation.
+- [x] All report figures now actually embedded as images (Figures 2-7),
+      not just described in bracketed placeholder text -- copied from
+      Enspec into writeup/figures/, ternary composite rendered fresh
+      (field-referenced version, distinct from the README's
+      scene-normalized banner).
+- [x] Figure 1 fixed: the original PNG conversion (via macOS `sips`)
+      silently rotated the source PDF 90 degrees (portrait output from a
+      landscape source) -- re-rendered with `pdftoppm` (poppler)
+      instead, which handles this PDF's page geometry correctly.
 - [x] Flight-box/sample-site figure embedded (Section 1, Figure 1) —
       `writeup/figures/bioscape_sampling.png`, sourced from Henry's
       `bioscape_sampling.pdf`. PNG committed to the repo for
