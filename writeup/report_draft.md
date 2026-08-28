@@ -327,20 +327,3 @@ Seaman, K., & Green, R. (2025, August). Advanced hyperspectral imaging
 from orbit: achievements and challenges from the first year of
 Tanager-1. In Proceedings of the Small Satellite Conference, Salt Lake
 City, UT, USA (pp. 10-13).
-
-## Appendix: Figure inventory
-
-| # | Figure | Section | File |
-|---|---|---|---|
-| 1 | Flight-box coverage + sample sites | 1 | `figures/bioscape_sampling.png` (vector source: Enspec `figures/bioscape_sampling.pdf`) |
-| 2 | FWHM by wavelength, Tanager vs. AVIRIS-NG vs. EMIT | 2 | `figures/fwhm_comparison.png` |
-| 3 | Cape ternary composite (Nitrogen/Lignin/Calcium), field-referenced | 3 | `figures/ternary_field_referenced.png` |
-| 4 | Tanager vs. EMIT, density distributions | 4 | `figures/emit_vs_tanager_density.png` |
-| 5 | Tanager vs. EMIT, all 4 traits, side by side | 4 | `figures/tanager_vs_emit_sidebyside_maps.png` |
-| 6 | Tanager vs. EMIT, per-pixel difference | 4 | `figures/tanager_emit_difference_map.png` |
-| 7 | Nitrogen: Tanager vs. EMIT vs. AVIRIS-NG | 5 | `figures/nitrogen_tanager_emit_aviris.png` |
-| 8 | California, all 4 traits (Low/Med/High) | 6 | `figures/california_sidebyside_maps.png` |
-
-All paths are relative to `writeup/`; every file above is committed to
-this repo under `writeup/figures/`.
-
