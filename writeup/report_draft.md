@@ -7,16 +7,31 @@ submission tone/length — flag anything that reads rough.*
 
 ---
 
-## 1. Why this matters
+## 1. The potential for Tanager as a source of foliar trait maps
 
-The Biodiversity Survey of the Cape (BioSCape) spent a full airborne
-campaign — AVIRIS-NG imagery, hundreds of field plots, thousands of leaf
-chemistry samples — building one of the richest foliar trait-model
-libraries that exists for any biodiversity hotspot on Earth. That library
-was trained entirely on one airborne sensor, over one campaign, in one
-region. Tanager is a new question mark against all three: a different
-platform (spaceborne, not airborne), built and calibrated independently,
-flying over the same landscape two years later.
+Measuring the distribution of foliar traits across landscapes is key to
+understanding ecological processes at spatial extents relevant for
+conservation decisions and policy making. Airborne imaging spectroscopy
+has been used for decades to robustly predict a wide suite of structural
+and biochemical plant traits across a variety of ecosystems. These
+airborne acquisitions and their paired ground-collected data are
+increasingly used to train models applied to space-borne sensors such as
+EMIT. Tanager is well-poised to serve as an additional source of
+space-borne trait maps, with the advantage of being able to respond to
+ecological disturbances more nimbly than current data sources and planned
+missions like EAGLE-VSWIR.
+
+BioSCape offers a well-documented example of exactly this kind of
+airborne-trained resource, and a natural test case for whether it can be
+put to work on a new platform. Its 2023 campaign — AVIRIS-NG imagery, 542
+field plots, thousands of leaf chemistry samples — built one of the
+richest foliar trait-model libraries that exists for any biodiversity
+hotspot on Earth (Cardoso et al., 2025), predicting 20 foliar traits
+across the Cape Floristic Region. That library was trained entirely on
+one airborne sensor, over one campaign, in one region. Tanager is a new
+question mark against all three: a different platform (spaceborne, not
+airborne), built and calibrated independently, flying over the same
+landscape roughly a year and a half later.
 
 Does an existing, independently-trained trait-model library transfer to
 a brand-new commercial hyperspectral platform with **zero recalibration**?
@@ -46,16 +61,25 @@ rather than aspirational.
 | Source | Role | Coverage used |
 |---|---|---|
 | Tanager (`basic_sr_hdf5`) | Primary test platform | Cape scene (2025-05-04), California scene (2025-04-07) |
-| AVIRIS-NG (BioSCape campaign) | Trait model training data + independent airborne validation | Nov 2023, Cape region |
+| AVIRIS-NG (BioSCape campaign, Kovach et al. 2025) | Trait model training data + independent airborne validation | Nov 2023, Cape region |
 | EMIT | Independent spaceborne cross-check | 2026-03-02, same Cape AOI |
 | AVIRIS-Classic + NEON (SHIFT campaign) | Trait model training data, California | 2019-2023-ish, Santa Barbara |
 
 **Trait models**: BioSCape's PLSR (partial least squares regression)
-foliar trait models — Nitrogen, Calcium, Lignin, Cellulose, leaf mass per
-area (LMA) — trained on AVIRIS-NG reflectance and community-weighted-mean
-field chemistry. A second, independently-trained model set from the SHIFT
-campaign (Santa Barbara, CA) was used for the California test, trained on
-a blend of AVIRIS-Classic and NEON data.
+foliar trait models — Nitrogen, Calcium, Lignin, Cellulose, and leaf mass
+per area (LMA) of the 20 traits in the full product — were trained on
+AVIRIS-NG L2B enhanced surface reflectance (Kovach et al., 2025) and
+community-weighted-mean field chemistry from 542 plots collected
+concurrent with image acquisition (median 9-day mismatch between plot
+sampling and overpass). Training used an ensemble permutational approach:
+an 85/15 train/validation split, with the 85% further split 30 times to
+select the optimal number of PLSR components, repeated across 200
+iterations to yield 200 models per trait — the mean prediction and the
+standard deviation across those 200 iterations are what this project
+treats as each trait's mean and uncertainty layers. A second,
+independently-trained model set from the SHIFT campaign (Santa Barbara,
+CA) was used for the California test, trained on a blend of AVIRIS-Classic
+and NEON data.
 
 **The core technical problem**: Tanager's `basic_sr_hdf5` format is not
 readable by existing trait-modeling pipelines (HyTools, built for this
@@ -76,13 +100,31 @@ matches its as-flown FWHM (we pulled AVIRIS-NG's real per-band FWHM from
 an actual corrected flightline rather than the trait model's own metadata,
 which didn't carry it).
 
-**Model variant**: BioSCape's trait models come in two flavors per trait —
-an IR-only variant (avoids visible-wavelength pigment absorption, the
-lab's general preference for same-sensor work) and a full-spectrum
-variant. We tested both against field data for this specific cross-sensor
-task and found the full-spectrum variant performs consistently better here
-(Section 3) — worth stating explicitly, since it runs against the lab's
-usual default.
+**Model variant**: BioSCape's trait models come in two flavors per
+trait — an infrared-only variant (1000–2450 nm) and a full-spectrum
+variant (450–2450 nm). The BioSCape team's own model assessment found
+performance broadly similar between the two spectral ranges and adopted
+the infrared models as the project default, since they are more
+parsimonious and avoid co-correlation with pigments that strongly affect
+the visible region — with lignin as the one documented exception, showing
+modest improvement under the full-spectrum model, likely from leveraging
+the red edge. We independently tested both variants against field data
+for this cross-sensor (AVIRIS-NG-trained model → Tanager/EMIT) task and
+found the same lignin exception holds, but that the full-spectrum variant
+also performs consistently better than the infrared variant for every
+other trait checked in this specific cross-sensor setting (Section 3) —
+the opposite of the same-sensor result. We use full-spectrum models for
+all traits here and say so explicitly, since it departs from the
+project's published same-sensor default.
+
+**Vegetation masking**: BioSCape's own model training excluded pixels
+below NDVI 0.4 or below 0.1 reflectance at 807 nm, to remove non-vegetated
+and shadowed pixels. We independently derived masking thresholds for each
+scene used in this project (Tanager Cape, Tanager California) directly
+from that scene's own reflectance histogram rather than reusing these
+values outright, since surface reflectance levels aren't necessarily
+comparable band-for-band across sensors and processing pipelines — but
+landed on a similar NDVI-plus-NIR-brightness approach.
 
 ## 3. Cape Floristic Region trait maps
 
@@ -97,6 +139,16 @@ Section 6), Nitrogen and Lignin transfer best:
 | Lignin | 130.68 mg/g | 148.81 mg/g | 94.0% |
 | Calcium | 19.08 mg/g | 7.24 mg/g | 95.3% |
 | Cellulose | 101–107 mg/g | 161.63 mg/g | 53.1% |
+
+It's worth noting these traits weren't equally strong same-sensor models
+to begin with: BioSCape's own published validation (independent
+AVIRIS-NG holdout data, not cross-sensor) reports Nitrogen and Calcium as
+the more reliable models here (NRMSE 0.109 and 0.081, Nash-Sutcliffe
+Efficiency 0.313 and 0.26), with Lignin and Cellulose already weaker
+same-sensor (NRMSE 0.192 and 0.164, NSE 0.182 and 0.247). Lignin's strong
+cross-sensor field match despite a middling same-sensor score is notable
+on its own; Cellulose's cross-sensor weakness is at least partly
+inherited rather than purely a transfer artifact.
 
 Lignin is the closest match to field values outright. Nitrogen and
 Calcium both pass their own model's internal sanity check on ~95% of
@@ -263,6 +315,21 @@ just an assertion of it.
 
 ---
 
+## References
+
+Cardoso, A. W., Hestir, E. L., Slingsby, J. A., Forbes, C. J., Moncrieff,
+G. R., Turner, W., Skowno, A. L., Nesslage, J., Brodrick, P. G., Gaddis,
+K. D., & Wilson, A. M. (2025). The biodiversity survey of the Cape
+(BioSCape), integrating remote sensing with biodiversity science. *npj
+Biodiversity*, 4(1), 2. https://doi.org/10.1038/s44185-024-00071-5
+
+Kovach, K. R., Ye, Z., Frye, H., & Townsend, P. A. (2025). BioSCape:
+AVIRIS-NG L2B Enhanced Surface Reflectance (Version 1) [netCDF]. ORNL
+Distributed Active Archive Center. https://doi.org/10.3334/ORNLDAAC/2385
+
+*(SHIFT campaign and Tanager platform citations still needed — see Open
+items below.)*
+
 ## Appendix: Figure inventory
 
 | Figure | File |
@@ -283,4 +350,10 @@ just an assertion of it.
 - [ ] Tighten Section 1/8 for final word count once overall length target
       is known.
 - [ ] Fill in exact SHIFT campaign dates/citation once confirmed.
-- [ ] Add BioSCape/SHIFT/Tanager citations and data DOIs.
+- [x] BioSCape/AVIRIS-NG citations and DOI added (Cardoso et al. 2025,
+      Kovach et al. 2025) — pulled from
+      `Manuscripts/bioscape_trait_map_V1_DAAC.docx`.
+- [ ] Still need: SHIFT campaign citation, Tanager platform citation, and
+      (once available) a citation/DOI for the BioSCape trait-map product
+      itself (the DAAC doc this session pulled from is a pre-submission
+      draft, not yet published with its own DOI).
