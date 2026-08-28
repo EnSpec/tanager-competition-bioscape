@@ -29,8 +29,13 @@ question mark against all three: a different platform (spaceborne, not
 airborne), built and calibrated independently, flying over the same
 landscape roughly a year and a half later.
 
-*[Figure: flight-box coverage + field sample sites over the CFR —
-Henry to point to the existing figure file.]*
+![AVIRIS-NG flight box coverage and trait sampling locations across the Cape Floristic Region](figures/bioscape_sampling.png)
+
+*Figure 1. AVIRIS-NG flight box coverage (outlines) and trait sampling
+locations (orange points) across the Cape Floristic Region, 2023 BioSCape
+campaign. PNG here for preview; the source PDF (vector, on Enspec at
+`figures/bioscape_sampling.pdf`) is what to embed in the final submission
+for print-quality rendering.*
 
 **Can an existing, independently-trained trait-model library transfer to
 a brand-new commercial hyperspectral platform with *zero recalibration*?**
@@ -57,9 +62,9 @@ answer now.
 | Tanager (`basic_sr_hdf5`) | Primary test platform | Cape scene (2025-05-04), California scene (2025-04-07) |
 | AVIRIS-NG (BioSCape campaign, Kovach et al. 2025) | Trait model training data + independent airborne validation | Nov 2023, Cape region |
 | EMIT | Independent spaceborne cross-check | 2026-03-02, same Cape area of interest (AOI) |
-| SHIFT campaign† | Trait model training data, California | Santa Barbara, exact dates TBC |
+| AVIRIS-NG (SHIFT campaign) | Trait model training data, California | Santa Barbara, exact dates TBC |
 
-† *SHIFT background: [earthdata.nasa.gov/data/projects/shift](https://www.earthdata.nasa.gov/data/projects/shift). Candidate source datasets: [AVIRIS-NG plant trait mosaics](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-avng-plant-trait-mosaics-2453-1), [foliar chemical analysis](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-foliar-chemical-analysis-2337-1), [dried/ground leaf reflectance](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-driedground-leaf-reflec-2244-1). The California model json's only training-data metadata is a `spectrometer: "avc+neon"` tag — read here as AVIRIS-Classic + NEON, but that's an inference from a terse field, not a confirmed description. It's possible this model pools data across multiple campaigns/sites rather than SHIFT-region data specifically. Need to confirm the exact composition with the colleague who provided the model before naming a specific dataset/citation.*
+† *SHIFT background: [earthdata.nasa.gov/data/projects/shift](https://www.earthdata.nasa.gov/data/projects/shift). Source datasets: [AVIRIS-NG plant trait mosaics](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-avng-plant-trait-mosaics-2453-1), [foliar chemical analysis](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-foliar-chemical-analysis-2337-1), [dried/ground leaf reflectance](https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-shift-driedground-leaf-reflec-2244-1). (The California model json carries a `spectrometer: "avc+neon"` metadata tag; confirmed with Ting, who provided the model, that this is a stale artifact from a script originally built for WDTS data, left in by mistake — the SHIFT model is trained on SHIFT field data only, same AVIRIS-NG platform as BioSCape.)*
 
 **Trait models**: BioSCape's PLSR (partial least squares regression)
 foliar trait models — Nitrogen, Calcium, Lignin, Cellulose, and leaf mass
@@ -73,9 +78,9 @@ select the optimal number of PLSR components, repeated across 200
 iterations to yield 200 models per trait — the mean prediction and the
 standard deviation across those 200 iterations are what this project
 treats as each trait's mean and uncertainty layers. A second,
-independently-trained model set associated with the SHIFT campaign
-(Santa Barbara, CA) was used for the California test — see the sensors
-table footnote for what's confirmed vs. inferred about its training data.
+independently-trained model set from the SHIFT campaign (Santa Barbara,
+CA) — same AVIRIS-NG platform, different campaign and field dataset —
+was used for the California test.
 
 **The core technical problem**: Tanager's `basic_sr_hdf5` format is not
 readable by existing trait-modeling pipelines (HyTools, built for this
@@ -98,18 +103,17 @@ which didn't carry it).
 
 **Model variant**: BioSCape's trait models come in two spectral-range
 flavors per trait — infrared-only (1000–2450 nm) and full-spectrum
-(450–2450 nm). We used full-spectrum models for every trait in this
-project (Section 3 shows why). *[Note: earlier drafts of this section
-described the BioSCape team's own same-sensor comparison between the two
-ranges in more detail — cut for now since that internal assessment is
-still in review at the ORNL DAAC and not yet citable as published. Worth
-revisiting how to reference it once we decide how to handle in-review
-work throughout — see note at the end of this section.]*
+(450–2450 nm). The BioSCape team's own same-sensor comparison between the
+two found broadly similar performance and adopted infrared as the project
+default (more parsimonious, avoids co-correlation with visible-region
+pigments), with lignin as the one documented exception favoring the
+full-spectrum model (Frye et al., in review). We used full-spectrum
+models for every trait in this project instead — Section 3 shows why that
+departs from the same-sensor default here.
 
 **Vegetation masking**: model training for the BioSCape trait maps
 excluded pixels below NDVI 0.4 or below 0.1 reflectance at 807 nm, to
-remove non-vegetated and shadowed pixels (per internal project
-documentation, in review at the ORNL DAAC as of this writing). We
+remove non-vegetated and shadowed pixels (Frye et al., in review). We
 independently derived masking thresholds for each scene used in this
 project (Tanager Cape, Tanager California) directly from that scene's own
 reflectance histogram rather than reusing these values outright, since
@@ -117,21 +121,10 @@ surface reflectance levels aren't necessarily comparable band-for-band
 across sensors and processing pipelines — but landed on a similar
 NDVI-plus-NIR-brightness approach.
 
-*[Open question for Henry: several numbers in this section (542 plots,
-the NRMSE/NSE table in Section 3, the masking thresholds above) come from
-`bioscape_trait_map_V1_DAAC.docx`, which is in review, not published. My
-suggestion: cite it as "BioSCape trait maps, in review at ORNL DAAC
-(2026)" — standard practice for citing your own team's forthcoming work,
-and accurate about its status — rather than removing the numbers
-entirely, since they're genuinely useful grounding. But this is your call
-given publication norms/embargo concerns I can't fully judge from here;
-flag if you'd rather strip specifics until it's public.]*
-
 ## 3. Cape Floristic Region trait maps
 
-Applying the BioSCape models to the Tanager scene, then checking predicted
-values against 646 community-weighted-mean field plots from the same
-region (none of which happen to fall inside this specific scene — see
+To assess whether predictions made with the Tanager scene by applying the BioSCape models, we checked the predicted
+values against 646 the community-weighted-mean field plot values across the Cape Florisitc Region (none of which happen to fall inside this specific scene — see
 Section 6), Nitrogen and Lignin transfer best:
 
 | Trait | Predicted median | Field (CWM) median | % within model's own valid range |
@@ -142,9 +135,9 @@ Section 6), Nitrogen and Lignin transfer best:
 | Cellulose | 101–107 mg/g | 161.63 mg/g | 53.1% |
 
 It's worth noting these traits weren't equally strong same-sensor models
-to begin with: internal BioSCape validation (independent AVIRIS-NG
-holdout data, not cross-sensor; in review at the ORNL DAAC as of this
-writing) reports Nitrogen and Calcium as
+to begin with: BioSCape's own validation (independent AVIRIS-NG holdout
+data, not cross-sensor; Frye et al., in review) reports Nitrogen and
+Calcium as
 the more reliable models here (NRMSE 0.109 and 0.081, Nash-Sutcliffe
 Efficiency 0.313 and 0.26), with Lignin and Cellulose already weaker
 same-sensor (NRMSE 0.192 and 0.164, NSE 0.182 and 0.247). Lignin's strong
@@ -261,9 +254,11 @@ rich — and the current Tanager coverage still doesn't reach it.**
 
 To test whether this cross-sensor methodology is Cape-specific or
 general, we applied a second, independently-trained model set — from
-NASA JPL's SHIFT campaign (Santa Barbara, CA), trained on a blend of
-AVIRIS-Classic and NEON reflectance — to a Tanager scene over the SHIFT
-study area, using the same FWHM-matching pipeline built for the Cape.
+NASA JPL's SHIFT campaign (Santa Barbara, CA), trained on AVIRIS-NG
+reflectance and SHIFT's own field-collected foliar chemistry (same
+platform as BioSCape, an entirely separate campaign and region) — to a
+Tanager scene over the SHIFT study area, using the same FWHM-matching
+pipeline built for the Cape.
 
 One trait needed a real fix along the way: LMA and Calcium in the SHIFT
 models were fit on a square-root-transformed response (avoids negative
@@ -329,8 +324,16 @@ Kovach, K. R., Ye, Z., Frye, H., & Townsend, P. A. (2025). BioSCape:
 AVIRIS-NG L2B Enhanced Surface Reflectance (Version 1) [netCDF]. ORNL
 Distributed Active Archive Center. https://doi.org/10.3334/ORNLDAAC/2385
 
-*(SHIFT campaign and Tanager platform citations still needed — see Open
-items below.)*
+Frye, H. A., Euston-Brown, D., Kovach, K. R., Slingsby, J., Ye, Z., &
+Townsend, P. A. (in review). BioSCape foliar trait maps derived from
+AVIRIS-NG imagery. ORNL Distributed Active Archive Center. *(DOI pending
+— citation covers the 542-plot training design, model performance table,
+IR-vs-full-spectrum comparison, and vegetation masking thresholds
+referenced in Sections 2-3. Expected public by the time this competition
+is reviewed, per Henry.)*
+
+*(SHIFT campaign field/reflectance data and Tanager platform citations
+still needed — see Open items below.)*
 
 ## Appendix: Figure inventory
 
@@ -351,11 +354,24 @@ items below.)*
       only (recommended) vs. dropping entirely.
 - [ ] Tighten Section 1/8 for final word count once overall length target
       is known.
-- [ ] Fill in exact SHIFT campaign dates/citation once confirmed.
 - [x] BioSCape/AVIRIS-NG citations and DOI added (Cardoso et al. 2025,
       Kovach et al. 2025) — pulled from
       `Manuscripts/bioscape_trait_map_V1_DAAC.docx`.
-- [ ] Still need: SHIFT campaign citation, Tanager platform citation, and
-      (once available) a citation/DOI for the BioSCape trait-map product
-      itself (the DAAC doc this session pulled from is a pre-submission
-      draft, not yet published with its own DOI).
+- [x] BioSCape trait-map product itself now cited as "Frye et al., in
+      review" throughout (Henry: fine to cite in-review, likely public by
+      the time Planet reviews this) — DOI still pending, fill in once
+      assigned.
+- [x] SHIFT training data corrected: confirmed with Ting that the
+      `spectrometer: "avc+neon"` tag was a stale artifact from a WDTS
+      script, left in by mistake — SHIFT model is trained on SHIFT field
+      data + AVIRIS-NG only, same platform as BioSCape. Fixed everywhere
+      it was mentioned (sensors table, Trait models paragraph, Section 7).
+- [ ] Still need: formal SHIFT field/reflectance dataset citation (the
+      four earthdata.nasa.gov catalog URLs in the sensors table footnote
+      are candidates, not yet confirmed as the exact source) and a
+      Tanager platform citation.
+- [x] Flight-box/sample-site figure embedded (Section 1, Figure 1) —
+      `writeup/figures/bioscape_sampling.png`, sourced from Henry's
+      `bioscape_sampling.pdf`. PNG committed to the repo for
+      Markdown/GitHub rendering; swap in the PDF for the final
+      submission for vector quality.
