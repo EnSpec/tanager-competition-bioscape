@@ -123,9 +123,11 @@ NDVI-plus-NIR-brightness approach.
 
 ## 3. Cape Floristic Region trait maps
 
-To assess whether predictions using the BioSCape models applied to the Tanager scene were realistic, we checked the predicted
-values against 646 the community-weighted-mean field plot values across the Cape Florisitc Region (none of which happen to fall inside this specific scene — see
-Section 6), Nitrogen and Lignin transfer best:
+To assess whether predictions using the BioSCape models applied to the
+Tanager scene were realistic, we checked the predicted values against
+646 community-weighted-mean field plot values across the Cape Floristic
+Region (none of which happen to fall inside this specific scene — see
+Section 6). Nitrogen and Lignin transfer best:
 
 | Trait | Predicted median | Field (CWM) median | % within model's own valid range |
 |---|---|---|---|
@@ -304,7 +306,7 @@ Tanager is well positioned to become an invaluable resource as a producer of hig
 2. **More Tanager coverage of the SHIFT study area in California**, for
    the same reason — an independently-trained, independently-validated
    model library already exists there, ready to be checked against new
-   spaceborne data the moment coverage exists. Because SHIFT data collected across a growing season, this becomes an ideal test bed for generating trait products over wide spatial domains but also throughout time.
+   spaceborne data the moment coverage exists. Because SHIFT data was collected across a growing season, this is an ideal test bed for generating trait products across wide spatial domains, but also through time.
 
 
 ---
