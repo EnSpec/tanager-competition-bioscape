@@ -32,6 +32,7 @@ from rasterio.warp import reproject, Resampling
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 
 TRAIT_OUTPUT_DIR = "/Volumes/Enspec/projects/BioScape/tanager_competition/trait_outputs/"
 FIGURES_DIR = "/Volumes/Enspec/projects/BioScape/tanager_competition/figures/"
@@ -92,12 +93,20 @@ def main():
     veg_mask = load_veg_mask()
     # 2 rows x 4 cols (two trait-pairs per row) instead of 4 rows x 2 cols --
     # the tall 1-column layout left large blank gaps when scaled to page
-    # width in the report (2026-08-29, per Henry's review).
-    fig, axes = plt.subplots(2, 4, figsize=(18, 9))
+    # width in the report (2026-08-29, per Henry's review). Colorbars moved
+    # from thin vertical strips wedged between panel columns to a single
+    # horizontal bar spanning each trait's Tanager+EMIT pair, underneath
+    # both maps (2026-08-29, per Henry's review) -- reads less cramped.
+    fig = plt.figure(figsize=(18, 11))
+    gs = GridSpec(5, 4, figure=fig, height_ratios=[1, 0.07, 0.3, 1, 0.07], hspace=0.1, wspace=0.15)
 
     for i, (label, stem, units, (lo, hi), cmap_name) in enumerate(TRAITS):
-        row, pair = divmod(i, 2)
-        ax_t, ax_e = axes[row, pair * 2], axes[row, pair * 2 + 1]
+        pair_row, pair = divmod(i, 2)
+        img_row = 0 if pair_row == 0 else 3
+        col0, col1 = pair * 2, pair * 2 + 1
+        ax_t = fig.add_subplot(gs[img_row, col0])
+        ax_e = fig.add_subplot(gs[img_row, col1])
+        cax = fig.add_subplot(gs[img_row + 1, col0:col1 + 1])
         cmap = matplotlib.colormaps[cmap_name].copy()
         cmap.set_bad("lightgray")
 
@@ -115,10 +124,10 @@ def main():
         ax_t.set_xticks([]); ax_t.set_yticks([])
         ax_e.set_xticks([]); ax_e.set_yticks([])
 
-        cbar = fig.colorbar(im, ax=[ax_t, ax_e], fraction=0.04, pad=0.03)
+        cbar = fig.colorbar(im, cax=cax, orientation="horizontal")
         cbar.ax.tick_params(labelsize=10)
 
-    fig.subplots_adjust(hspace=0.3, wspace=0.25, top=0.86)
+    fig.subplots_adjust(top=0.87)
     fig.suptitle(
         "Tanager (2025-05-04) vs. EMIT (2026-03-02) predicted trait maps, same AOI\n"
         "(color scale = region-wide CWM field-data p5-p95, not either sensor's own range;\n"
