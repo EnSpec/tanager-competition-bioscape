@@ -1,8 +1,9 @@
 """Render step5's field-referenced ternary GeoTIFF to the report PNG,
-with a north arrow and scale bar -- previously a manual QGIS export with
-neither (2026-08-28, Henry's review). Builds it in Python instead of
-QGIS so the figure is reproducible from this repo alone, same rationale
-as step5's own raw_rgb port.
+with a north arrow (bottom-right) and scale bar (bottom-left, nudged
+toward center) -- previously a manual QGIS export with neither
+(2026-08-28, Henry's review). Builds it in Python instead of QGIS so
+the figure is reproducible from this repo alone, same rationale as
+step5's own raw_rgb port.
 
 The GeoTIFF is UTM 34S (EPSG:32734), 30m pixels, north-up -- a plain
 image plot preserves true north without needing an axes projection.
@@ -38,9 +39,9 @@ def main():
     ax.imshow(img_rgba)
     ax.axis("off")
 
-    # Scale bar: bottom-left, in data (pixel) coordinates.
+    # Scale bar: bottom-left, nudged toward center, in data (pixel) coordinates.
     bar_px = SCALE_BAR_M / px_size_m
-    margin_x = width * 0.05
+    margin_x = width * 0.10
     margin_y = height * 0.06
     bar_y = height - margin_y
     ax.plot([margin_x, margin_x + bar_px], [bar_y, bar_y], color="white",
@@ -51,17 +52,18 @@ def main():
             color="white", ha="center", va="bottom", fontsize=14, fontweight="bold",
             path_effects=[matplotlib.patheffects.withStroke(linewidth=2.5, foreground="black")])
 
-    # North arrow: simple solid triangle, top-right, with N below the base.
+    # North arrow: simple solid triangle, bottom-right, with N below the base.
     arrow_x = width * 0.94
-    arrow_top = height * 0.04
-    arrow_base = height * 0.14
+    text_y = height - margin_y
+    arrow_base = text_y - height * 0.03
+    arrow_top = arrow_base - height * 0.10
     arrow_half_width = width * 0.02
     triangle = Polygon(
         [(arrow_x, arrow_top), (arrow_x - arrow_half_width, arrow_base), (arrow_x + arrow_half_width, arrow_base)],
         closed=True, facecolor="white", edgecolor="black", linewidth=1.5,
     )
     ax.add_patch(triangle)
-    ax.text(arrow_x, arrow_base + height * 0.015, "N", color="white", ha="center",
+    ax.text(arrow_x, text_y, "N", color="white", ha="center",
             va="top", fontsize=16, fontweight="bold",
             path_effects=[matplotlib.patheffects.withStroke(linewidth=2.5, foreground="black")])
 
