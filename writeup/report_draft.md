@@ -291,9 +291,9 @@ shrubland — a plausibility check, not a validation.
 
 ## 8. The ask: increasing Tanager coverage of data-rich biodiverse regions
 
-Tanager is well positioned to become an invaluable resource as a producer of high quality of foliar trait maps across the globe. These trait maps can be used in a wide variety of contexts such as 
+Tanager is well positioned to become an invaluable resource as a producer of high quality foliar trait maps across the globe. These trait maps can be used in numerous domains including agriculture, forestry, and conservation management. As we have demonstrated in this short report, existing datasets can readily be applied to generate reasonable products.
 
-**Two concrete requests, grounded in what this project found:**
+**High priority areas for future Tanager acquisitions**
 
 1. **More Tanager coverage of the Cape Floristic Region**, specifically
    scenes that overlap BioSCape's existing ground-truth plot network and
@@ -304,18 +304,8 @@ Tanager is well positioned to become an invaluable resource as a producer of hig
 2. **More Tanager coverage of the SHIFT study area in California**, for
    the same reason — an independently-trained, independently-validated
    model library already exists there, ready to be checked against new
-   spaceborne data the moment coverage exists.
+   spaceborne data the moment coverage exists. Because SHIFT data collected across a growing season, this becomes an ideal test bed for generating trait products over wide spatial domains but also throughout time.
 
-More speculatively: the methodology demonstrated here — real per-sensor
-FWHM matching, explicit handling of where cross-sensor transfer breaks
-down, honest reporting of what's validated vs. demonstrated — isn't
-specific to the Cape or California. The same approach could extend to
-other Mediterranean-climate regions with existing airborne trait-model
-infrastructure: the Mediterranean Basin, central Chile, southwestern
-Australia. We're not claiming that here — we've tested two of five. But
-two independent confirmations, on two continents, using two different
-model libraries, is a real starting point for that broader vision, not
-just an assertion of it.
 
 ---
 

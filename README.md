@@ -5,6 +5,37 @@ apply existing BioSCape-trained foliar trait models (Cape Floristic Region,
 South Africa) to Planet's example Tanager-1 release-2 scene, produce trait
 maps, and validate against BioSCape ground sites in the same area.
 
+![Ternary trait composite (Nitrogen/Lignin/Cellulose) over the Cape Floristic Region Tanager scene](writeup/figures/ternary_composite_preview.png)
+
+*Nitrogen (red) / Lignin (green) / Cellulose (blue) predicted from Tanager
+reflectance, veg-masked. See `writeup/report_draft.md` for the full
+write-up and `code/step5_ternary_map.py` for how this was built.*
+
+## Reproducibility note
+
+This repo's code is public and documents the full method, but not every
+input is. Breakdown of what's independently obtainable vs. internal:
+
+- **Publicly available, independent of this project**: the Tanager scenes
+  (Planet's open STAC catalog), the EMIT granule (NASA Earthdata), and the
+  AVIRIS-NG L2B reflectance product once [Kovach et al. 2025](https://doi.org/10.3334/ORNLDAAC/2385)
+  is fully released.
+- **Not yet public**: the BioSCape trait-model coefficient files this
+  project applies to Tanager/EMIT (from Frye et al., in review at ORNL
+  DAAC — see `writeup/report_draft.md` for citation details) and the SHIFT
+  (California) trait models, provided directly by a collaborator and not
+  deposited anywhere public yet.
+- **Internal lab infrastructure, not part of this repo**: this project's
+  own intermediate/output data lives on the lab's internal Enspec server
+  (paths like `/Volumes/Enspec/...` below), and a few reference
+  scripts/configs are reused from other, currently-private lab
+  repositories (e.g. `Airborne_Apply_Models/...`,
+  `Workflow11_Trait_Map_Assess/...`, `bioscape_indices/...`, referenced in
+  code comments and the run order below). An external reader can follow
+  the method in full from the code, but can't literally re-run this
+  pipeline end to end without either lab server access or the
+  not-yet-public model files above.
+
 ## Data
 
 All data lives on the Enspec server, **not** in this repo:
