@@ -24,15 +24,7 @@ question mark against all three: a different platform (spaceborne, not
 airborne), built and calibrated independently, flying over the same
 landscape roughly a year and a half later.
 
-![AVIRIS-NG flight box coverage and trait sampling locations across the Cape Floristic Region](figures/bioscape_sampling.png)
-
-*Figure 1. AVIRIS-NG flight box coverage (outlines) and trait sampling
-locations (orange points) across the Cape Floristic Region, 2023 BioSCape
-campaign. PNG here for preview; the source PDF (vector, on Enspec at
-`figures/bioscape_sampling.pdf`) is what to embed in the final submission
-for print-quality rendering.*
-
-**Can an existing, independently-trained trait-model library transfer to
+**Can an existing, independently-trained trait-model transfer to
 a brand-new commercial hyperspectral platform with *zero recalibration*?**
 That's the question this project set out to answer, using Tanager's
 example release scene over the Cape Floristic Region — and, once the
@@ -43,10 +35,16 @@ The answer, in short is **yes** — and the caveats along the way turn out to be
 as informative as the successes.
 
 Missions like EAGLE-VSWIR will inherit this exact question the moment
-they launch: how trait models trained on one instrument transfer to
-another, and what it takes to make that transfer honest rather than
-aspirational. Tanager, already on orbit, is a chance to work out the
-answer now.
+they launch: how do trait models trained on one instrument transfer to
+another, and what does it take to make that transfer credible rather
+than aspirational. **Tanager, already in orbit, is a chance to work out
+the answer now.**
+
+![](figures/bioscape_sampling.png)
+
+*Figure 1. AVIRIS-NG flight box coverage (outlines) and trait sampling
+locations (orange points) across the Cape Floristic Region, 2023 BioSCape
+campaign.*
 
 ## 2. Data and methods
 
@@ -57,13 +55,10 @@ answer now.
 | Tanager (`basic_sr_hdf5`, Guido et al. 2025) | Primary test platform | Cape scene (2025-05-04), California scene (2025-04-07) |
 | AVIRIS-NG (BioSCape campaign, Kovach et al. 2025) | Trait model training data + independent airborne validation | Nov 2023, Cape region |
 | EMIT | Independent spaceborne cross-check | 2026-03-02, same Cape area of interest (AOI) |
-| AVIRIS-NG (SHIFT campaign, Chadwick et al. 2025) | Trait model training data, California | Santa Barbara, exact dates TBC |
-
-† *SHIFT background: [earthdata.nasa.gov/data/projects/shift](https://www.earthdata.nasa.gov/data/projects/shift). Imagery used for training confirmed by Ting (matches DAAC documentation): Brodrick et al., 2023, SHIFT: AVIRIS-NG L2A Unrectified Surface Reflectance V1, ORNL DAAC, https://doi.org/10.3334/ORNLDAAC/2376. (The California model json also carries a `spectrometer: "avc+neon"` metadata tag; confirmed with Ting, who provided the model, that this is a stale artifact from a script originally built for WDTS data, left in by mistake — the SHIFT model is trained on SHIFT field data only, same AVIRIS-NG platform as BioSCape.)*
+| AVIRIS-NG (SHIFT campaign, Chadwick et al. 2025) | Trait model training data, California | Santa Barbara, 2022-02-24 to 2022-05-29 |
 
 **Trait models**: BioSCape's PLSR (partial least squares regression)
-foliar trait models — Nitrogen, Calcium, Lignin, Cellulose, and leaf mass
-per area (LMA) of the 20 traits in the full product — were trained on
+foliar trait models — Nitrogen, Calcium, Lignin, and Cellulose, of the 20 traits in the full product — were trained on
 AVIRIS-NG L2B enhanced surface reflectance (Kovach et al., 2025) and
 community-weighted-mean field chemistry from 542 plots collected
 concurrent with image acquisition (median 9-day mismatch between plot
@@ -77,13 +72,6 @@ independently-trained model set from the SHIFT campaign (Santa Barbara,
 CA; Chadwick et al., 2025) — same AVIRIS-NG platform, different campaign
 and field dataset — was used for the California test.
 
-**The core technical problem**: Tanager's `basic_sr_hdf5` format is not
-readable by existing trait-modeling pipelines (HyTools, built for this
-lab's airborne processing, has no reader for it — it's a different HDF5
-schema entirely, not the NEON format its one HDF5 reader expects). We
-built a standalone reader and resampling pipeline instead of forcing
-Tanager into infrastructure designed for large airborne tiles.
-
 **Cross-sensor spectral matching**: applying an AVIRIS-NG-trained model to
 Tanager reflectance isn't a matter of matching wavelengths alone — the two
 sensors have different spectral response widths (FWHM) at every band.
@@ -96,13 +84,15 @@ matches its as-flown FWHM (we pulled AVIRIS-NG's real per-band FWHM from
 an actual corrected flightline rather than the trait model's own metadata,
 which didn't carry it).
 
-![FWHM by wavelength, Tanager vs. AVIRIS-NG](figures/fwhm_comparison.png)
+![FWHM by wavelength, Tanager vs. AVIRIS-NG vs. EMIT](figures/fwhm_comparison.png)
 
 *Figure 2. Real per-band FWHM by wavelength (not nominal spec-sheet
 values). Tanager runs wider than AVIRIS-NG across most of 400-1750 nm
 (62% of Tanager bands, shaded region), narrower above ~1750 nm --
 exactly the pattern behind the "can't sharpen" caveats reported for
-individual traits later in this section and Section 3.*
+individual traits later in this section and Section 3. EMIT's native
+FWHM (8.4-8.8 nm) is coarser than both across the full range, for
+context in Section 4's comparison.*
 
 **Model variant**: BioSCape's trait models come in two spectral-range
 flavors per trait — infrared-only (1000–2450 nm) and full-spectrum
@@ -401,7 +391,7 @@ City, UT, USA (pp. 10-13).
 | # | Figure | Section | File |
 |---|---|---|---|
 | 1 | Flight-box coverage + sample sites | 1 | `figures/bioscape_sampling.png` (vector source: Enspec `figures/bioscape_sampling.pdf`) |
-| 2 | FWHM by wavelength, Tanager vs. AVIRIS-NG | 2 | `figures/fwhm_comparison.png` |
+| 2 | FWHM by wavelength, Tanager vs. AVIRIS-NG vs. EMIT | 2 | `figures/fwhm_comparison.png` |
 | 3 | Cape ternary composite (Nitrogen/Lignin/Calcium), field-referenced | 3 | `figures/ternary_field_referenced.png` |
 | 4 | Tanager vs. EMIT, all 4 traits, side by side | 4 | `figures/tanager_vs_emit_sidebyside_maps.png` |
 | 5 | Tanager vs. EMIT, density distributions | 4 | `figures/emit_vs_tanager_density.png` |

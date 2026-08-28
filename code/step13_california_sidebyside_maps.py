@@ -59,7 +59,13 @@ def load_masked(stem, veg_mask):
 
 def main():
     veg_mask = load_veg_mask()
-    fig, axes = plt.subplots(1, len(TRAITS), figsize=(4 * len(TRAITS), 5))
+    ncols = 3
+    nrows = 2
+    fig, axes = plt.subplots(nrows, ncols, figsize=(6 * ncols, 5.2 * nrows))
+    fig.subplots_adjust(hspace=0.25, wspace=0.35, top=0.86)
+    axes = axes.flatten()
+    for ax in axes[len(TRAITS):]:
+        ax.axis("off")
 
     for ax, (label, stem, colors) in zip(axes, TRAITS):
         arr = load_masked(stem, veg_mask)
@@ -78,10 +84,10 @@ def main():
         cmap.set_bad("lightgray")
         norm = BoundaryNorm([-0.5, 0.5, 1.5, 2.5], cmap.N)
         im = ax.imshow(binned, cmap=cmap, norm=norm)
-        ax.set_title(label, fontsize=11)
+        ax.set_title(label, fontsize=16)
         ax.set_xticks([]); ax.set_yticks([])
         cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, ticks=[0, 1, 2])
-        cbar.ax.set_yticklabels(["Low", "Med", "High"])
+        cbar.ax.set_yticklabels(["Low", "Med", "High"], fontsize=13)
 
         print(f"{label}: n_valid={valid.size}, tercile cuts at {lo_cut:.2f}/{hi_cut:.2f} "
               f"(scene-relative, not an absolute/validated scale)")
@@ -90,7 +96,7 @@ def main():
         "California (SHIFT models) predicted trait patterns, 2025-04-07\n"
         "Relative Low/Med/High within this scene only -- no field validation for California in this project;\n"
         "gray = non-vegetated. Not a numerically validated product.",
-        fontsize=11,
+        fontsize=15,
     )
     out_path = FIGURES_DIR + "california_sidebyside_maps.png"
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
