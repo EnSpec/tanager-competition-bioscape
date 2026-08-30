@@ -6,7 +6,7 @@
 
 Measuring the distribution of foliar traits across landscapes is key to
 understanding ecological processes at spatial extents relevant for
-conservation decisions and policy making. Airborne imaging spectroscopy
+conservation decisions and policymaking. Airborne imaging spectroscopy
 has been used for decades to robustly predict a wide suite of structural
 and biochemical plant traits across a variety of ecosystems. These
 airborne acquisitions and their paired ground-collected data are
@@ -18,13 +18,13 @@ missions like EAGLE-VSWIR.
 
 The NASA-led Biodiversity Survey of the Cape ([BioSCape](https://www.bioscape.io)) offers a well-documented example of exactly this kind of
 airborne-trained resource, and is a natural test case for whether it can be put to work on a new platform. The 2023 campaign acquired near wall-to-wall coverage with the AVIRIS-NG sensor over the Cape Floristic Region (CFR), a global biodiversity hotspot and a region particularly affected by global change. Along with fieldwork led by the [Townsend lab](https://townsend.russell.wisc.edu) resulting in 542 field plots and thousands of leaf chemistry samples, this project has built one of the
-richest foliar trait-model libraries that exists for any biodiversity
+richest foliar trait libraries that exists for any biodiversity
 hotspot on Earth (Cardoso et al., 2025). These efforts resulted in foliar trait maps for 20 traits across the CFR. These maps were trained entirely on one airborne sensor, over one campaign, in one region. We now have the opportunity to test whether our results derived from the airborne campaign align with results we might derive from space-borne measurements.
 
 **Can an existing, independently-trained trait model transfer to
 a brand-new commercial hyperspectral platform with *zero recalibration*?**
 That's the question this project set out to answer, using Tanager's
-example release scene over the Cape Floristic Region.
+example release scene over a portion of the Cape Floristic Region.
 
 The answer, in short, is **yes** — and the caveats along the way turn out to be
 as informative as the successes.
@@ -52,34 +52,25 @@ campaign.*
 | EMIT | Independent space-borne cross-check | 2026-03-02, same Cape area of interest (AOI) |
 
 **Trait models**: BioSCape's PLSR (partial least squares regression)
-foliar trait models — Nitrogen, Calcium, Lignin, and Cellulose — four of the 20 traits in the full product — were trained on
+foliar trait models — nitrogen, calcium, lignin, and cellulose — four of the 20 traits in the full product — were trained on
 AVIRIS-NG L2B enhanced surface reflectance (Kovach et al., 2025) and
 community-weighted-mean trait values from 542 plots collected
 concurrent with image acquisition (median 9-day mismatch between plot
 sampling and overpass). Training used an ensemble permutational approach:
 an 85/15 train/validation split, with the 85% further split 30 times to
 select the optimal number of PLSR components, repeated across 200
-iterations to yield 200 models per trait — the mean prediction and the
-standard deviation across those 200 iterations are what this project
-treats as each trait's mean and uncertainty layers.
+iterations to yield 200 models per trait. The mean prediction and the
+standard deviation across those 200 iterations are considered as the trait's mean and uncertainty layers. Each trait map is masked based on the observed minimum and maximum values to constrain unrealistic predictions.
 
-**Cross-sensor spectral matching**: Applying an AVIRIS-NG-trained model to
-Tanager reflectance isn't a matter of matching wavelengths alone — the two
-sensors have different spectral response widths (FWHM) at every band.
+**Cross-sensor spectral matching**: Tanager and AVIRIS-NG have different spectral response widths (FWHM) at every band, meaning that bands cannot simply be aligned.
 Tanager's FWHM runs 5.2–6.8 nm depending on wavelength; AVIRIS-NG's is
 flatter, 5.6–6.0 nm. We built each target band as a Gaussian relative
 spectral response, using the quadrature difference between the two
-sensors' real FWHM to determine the matching kernel width — not a generic
-resampling, and not assuming either sensor's nominal spec sheet FWHM
-matches its as-flown FWHM (we pulled AVIRIS-NG's real per-band FWHM from
-an actual corrected flightline rather than the trait model's own metadata,
-which didn't carry it).
+sensors' real FWHM to determine the matching kernel width.
 
 ![](figures/fwhm_comparison.png)
 
-*Figure 2. Real per-band FWHM by wavelength (not nominal spec-sheet
-values). Tanager runs wider than AVIRIS-NG across most of 400-1750 nm
-(62% of Tanager bands, shaded region).*
+*Figure 2. Per-band FWHM by wavelength. Tanager runs wider than AVIRIS-NG between 400-1750 nm (62% of Tanager bands, shaded region).*
 
 **Model variant**: BioSCape's trait models come in two spectral-range
 flavors per trait — infrared-only (1000–2450 nm) and full-spectrum
@@ -109,82 +100,75 @@ Region — none of which happen to fall inside this specific scene
 survey (~2,500–9,500 individual leaf samples: Frye et al., 2026, *Foliar
 Trait and Spectroscopy Data, Greater Cape Floristic Region, South
 Africa*, ORNL DAAC, https://doi.org/10.3334/ORNLDAAC/2482) has zero
-overlap too, with its nearest sample ~60 km away. This is one of the most densely ground-truthed landscapes for foliar traits anywhere, yet neither dataset happens to fall inside the one Tanager scene currently in the open catalog for this area. Nitrogen and Lignin transfer best:
+overlap too, with its nearest sample ~60 km away. This is one of the most densely ground-truthed landscapes for foliar traits anywhere, yet neither dataset happens to fall inside the one Tanager scene currently in the open catalog for this area. Nitrogen and lignin transfer best (see Table below).
 
 | Trait | Predicted median | Field (CWM) median | % within model's own valid range |
 |---|---|---|---|
-| Nitrogen | 15.74 mg/g | 9.73 mg/g | 95.0% |
-| Lignin | 130.68 mg/g | 148.81 mg/g | 94.0% |
-| Calcium | 19.08 mg/g | 7.24 mg/g | 95.3% |
-| Cellulose | 101–107 mg/g | 161.63 mg/g | 53.1% |
+| nitrogen | 15.74 mg/g | 9.73 mg/g | 95.0% |
+| lignin | 130.68 mg/g | 148.81 mg/g | 94.0% |
+| calcium | 19.08 mg/g | 7.24 mg/g | 95.3% |
+| cellulose | 101–107 mg/g | 161.63 mg/g | 53.1% |
 
-It's worth noting that the predictive performance of these traits wasn't equally strong: BioSCape's own validation (independent AVIRIS-NG holdout
-data, not cross-sensor; Frye et al., in review) reports Nitrogen and
-Calcium as more reliable models (NRMSE 0.109 and 0.081, Nash-Sutcliffe
-Efficiency 0.313 and 0.26), with Lignin and Cellulose already weaker
+It is worth noting that the predictive performance of these traits was not equally strong: BioSCape's own validation (independent AVIRIS-NG holdout
+data, not cross-sensor; Frye et al., in review) reports nitrogen and
+calcium as more reliable models (NRMSE 0.109 and 0.081, Nash-Sutcliffe
+Efficiency 0.313 and 0.26), with lignin and cellulose already weaker
 same-sensor (NRMSE 0.192 and 0.164, NSE 0.182 and 0.247). Lignin's strong
 cross-sensor field match despite a middling same-sensor score is notable
-on its own; Cellulose's cross-sensor weakness is at least partly
+on its own; cellulose's cross-sensor weakness is at least partly
 inherited rather than purely a transfer artifact.
 
 Lignin is the closest match to field values outright. 95% of vegetated
-pixels for Nitrogen and Calcium pass their own model's mask constrained to the minimum and maximum of the observed ground values. Nitrogen's absolute values do track the field data closely, but Calcium's don't — it runs roughly 2.6x higher, a bias that only surfaced once we checked against real field values instead of relying on that basic bounds check. Cellulose is the weakest of the four: only about half of vegetated pixels pass the observed min/max mask.
+pixels for nitrogen and calcium pass their own model's mask constrained to the minimum and maximum of the observed ground values. Nitrogen's absolute values do track the field data closely, but calcium's do not — it runs roughly 2.6x higher, a bias that emerges when compared to field collected data. Cellulose is the weakest of the four: only about half of vegetated pixels pass the observed minimum/maximum value mask.
 
 ![](figures/ternary_field_referenced.png)
 
-*Figure 3. Ternary composite (Nitrogen/Lignin/Calcium), normalized to
-region-wide CWM field-data ranges.*
+*Figure 3. Red-Green-Blue ternary composite (nitrogen/lignin/calcium), normalized to
+region-wide community weighted field-data ranges. Redder pixels correspond to areas where nitrogen is relatively higher than lignin and calcium. Greener pixels correspond to relatively high lignin compared to the other two traits, and bluer pixels represent high calcium.*
 
 ## 4. Cross-sensor comparison: EMIT
 
-No EMIT overpass exists near Tanager's exact acquisition date — the
-nearest same-year passes were 71–101 days off-season. Checking day-of-year
-proximity across every EMIT acquisition ever made over this footprint
-(EMIT is hosted onboard the International Space Station (ISS), meaning that coverage is opportunistic, not a fixed revisit) found a much closer seasonal match a year earlier
+No EMIT overpass exists near Tanager's exact acquisition date, with the
+nearest same-year passes occurring 71–101 days apart. Checking day-of-year
+proximity across every EMIT acquisition over this footprint
+(EMIT is hosted onboard the International Space Station (ISS), meaning that coverage is opportunistic and does not have a fixed revisit time) found a much closer seasonal match a year earlier
 (15 days off), but that pass's swath only clips 17% of the scene. We chose
 the best full-coverage option instead: 2026-03-02, 63 days off-season but
 100% AOI coverage in a single granule.
 
-Despite the platform difference, processing pipeline difference, and
-~10-month acquisition gap, predicted trait values agree closely over the
-same ground:
+Despite the differences between platform, processing timeline, and acquisition date, predicted trait values agree closely (see table below).
 
-| Trait | Tanager median | EMIT median | Agreement |
+| Trait | Tanager median | EMIT median | Percent difference |
 |---|---|---|---|
-| Nitrogen | 15.74 mg/g | 14.54 mg/g | ~8% |
-| Cellulose | 101.33 mg/g | 96.58 mg/g | ~5% |
-| Calcium | 19.08 mg/g | 21.46 mg/g | ~12% |
-| Lignin | 130.68 mg/g | 160.24 mg/g | ~23% |
+| nitrogen | 15.74 mg/g | 14.54 mg/g | ~8% |
+| cellulose | 101.33 mg/g | 96.58 mg/g | ~5% |
+| calcium | 19.08 mg/g | 21.46 mg/g | ~12% |
+| lignin | 130.68 mg/g | 160.24 mg/g | ~23% |
 
-Calcium and Lignin's larger gaps run in the *same direction* as their
+Calcium and lignin's larger gaps run in the *same direction* as their
 bias against field data (Section 3) — suggesting these are properties of
 the cross-sensor transfer methodology itself, not something specific to
 either satellite.
 
 ![](figures/emit_vs_tanager_density.png)
 
-*Figure 4. Density-distribution comparison (KDE), same AOI used
-throughout this section. Nitrogen and Cellulose overlap closely; Calcium
-and Lignin show a visible rightward shift for EMIT.*
+*Figure 4. Density-distribution comparison (kernel density estimate) between Tanager and EMIT. Nitrogen and cellulose overlap closely; calcium
+and lignin show a visible rightward shift for EMIT.*
 
 ![](figures/tanager_vs_emit_sidebyside_maps.png)
 
-*Figure 5. Tanager vs. EMIT predicted trait maps, same AOI, same
-field-referenced color scale per trait. EMIT reprojected onto Tanager's
-exact grid.*
+*Figure 5. Tanager vs. EMIT predicted trait maps over the same area of interest. EMIT is reprojected onto Tanager's exact grid.*
 
 ![](figures/tanager_emit_difference_map.png)
 
-*Figure 6. Per-pixel difference (EMIT minus Tanager), all 4 traits.*
+*Figure 6. Per-pixel difference (EMIT minus Tanager), for all 4 traits.*
 
-Within the difference map, Lignin's offset is
-close to **uniform across the entire scene** — consistent with a
-systematic sensor/calibration difference rather than a land cover effect.
-Calcium's disagreement, by contrast, has real **spatial structure** — the
-southern part of the scene runs noticeably higher for EMIT than the
-north, which is not what you'd expect from simple noise. A number of
+Within the difference map, lignin's offset is
+close to uniform across the entire scene with the exception of a vegetated wash area north of the Brandvlei dam, where EMIT predicts much higher lignin than Tanager. Calcium's disagreement is spatially structured with the
+southern part of the scene running noticeably higher for EMIT than the
+north, which is not what we would expect from simple noise. A number of
 individual agricultural fields also stand out with especially large
-differences — plausibly real differences in crop type, management
+differences. These are likely differences in crop type, management
 practice, or phenological stage between the two acquisition dates (ten
 months apart) rather than a sensor artifact. Field-level variability like
 that could also be contributing to the shape differences in the
@@ -195,10 +179,9 @@ cross-sensor offset.
 
 BioSCape's own AVIRIS-NG airborne campaign flew directly under part of
 this Tanager scene in November 2023 — 30.6% of the footprint, across 24
-processed flightline tiles. We built a mosaic that chooses the low-uncertainty pixel in the case of flightline tile overlap and
-compared it against the Tanager and EMIT predictions in the overlap area.
+processed flightline tiles. We built a mosaic that chooses the lowest uncertainty pixel in the case of flightline tile overlap and compared it against the Tanager and EMIT predictions in the overlap area.
 
-For Nitrogen, all three independently-processed products land close
+For nitrogen, all three independently-processed products land close
 together:
 
 | Product | Median (mg/g) |
@@ -210,26 +193,22 @@ together:
 ![](figures/nitrogen_tanager_emit_aviris.png)
 
 *Figure 7. Nitrogen predicted by three independently-processed products
-over the same AOI -- Tanager, EMIT, and BioSCape's own airborne
-AVIRIS-NG (30.6% scene coverage, shown as a narrow strip at its actual
-footprint). The AVIRIS-NG strip's spatial pattern visibly echoes the
-same subregion in the Tanager and EMIT panels.*
+over the same area of interest (Tanager, EMIT, and BioSCape's own airborne
+AVIRIS-NG). The BioSCape flights only have 30.6% scene coverage. The AVIRIS-NG strip's spatial pattern visibly echoes the same subregion in the Tanager and EMIT panels.*
 
-We're presenting this three-way comparison for Nitrogen only. The
+We present this three-way comparison for nitrogen only. The
 precomputed AVIRIS-NG trait tiles use a different model variant
 (IR-only) than what we determined works best for Tanager/EMIT
 (Section 2) for three of the four traits. This conflict is an interesting finding arising out of cross-sensor application and could originate from differences in atmospheric correction procedures and sensor calibration.
 
 ## 6. The ask: increasing Tanager coverage of data-rich biodiverse regions
 
-Tanager is well positioned to become an invaluable resource as a producer of high quality foliar trait maps across the globe. These trait maps can be used in numerous domains including agriculture, forestry, and conservation management. As we have demonstrated in this short report, existing datasets can readily be applied to generate reasonable products.
+Tanager is well positioned to become an invaluable resource as a producer of high quality foliar trait maps across the globe. These trait maps can be used in numerous domains including agriculture, forestry, and conservation management. As we have demonstrated in this short report, existing datasets can readily be applied to generate accurate products.
 
-**High priority area for future Tanager acquisitions**: more coverage of
-the Cape Floristic Region, specifically scenes that overlap BioSCape's
+More coverage of the Cape Floristic Region should be a **high priority for future Tanager acquisitions**, specifically scenes that overlap BioSCape's
 existing ground-truth plot network and processed airborne imagery. This
 region has more validation infrastructure per square kilometer than
-almost anywhere else hyperspectral trait models get tested — the
-current open-catalog scene simply doesn't reach any of it.
+almost anywhere else hyperspectral trait models get tested and would provide an important benchmark in assessing space-borne trait mapping accuracy.
 
 ---
 
