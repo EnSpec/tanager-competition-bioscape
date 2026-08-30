@@ -9,4 +9,5 @@ __pycache__/
 *.tif
 *.tiff
 CLAUDE.md
+internal_data_map.md
 writeup/report_draft.pdf
