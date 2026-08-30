@@ -13,23 +13,18 @@ airborne acquisitions and their paired ground-collected data are
 increasingly used to train models applied to space-borne sensors such as
 EMIT. Tanager is well-poised to serve as an alternative source of
 space-borne trait maps, with the advantage of being able to respond to
-ecological disturbances more nimbly than current data sources and planned
-missions like EAGLE-VSWIR.
+ecological disturbances more nimbly than current airborne acquisitions and planned
+missions like EAGLE-VSWIR. 
 
 The NASA-led Biodiversity Survey of the Cape ([BioSCape](https://www.bioscape.io)) offers a well-documented example of exactly this kind of
 airborne-trained resource, and is a natural test case for whether it can be put to work on a new platform. The 2023 campaign acquired near wall-to-wall coverage with the AVIRIS-NG sensor over the Cape Floristic Region (CFR), a global biodiversity hotspot and a region particularly affected by global change. Along with fieldwork led by the [Townsend lab](https://townsend.russell.wisc.edu) resulting in 542 field plots and thousands of leaf chemistry samples, this project has built one of the
 richest foliar trait-model libraries that exists for any biodiversity
-hotspot on Earth (Cardoso et al., 2025). These efforts resulted in foliar trait maps for 20 traits across the CFR. These maps were trained entirely on one airborne sensor, over one campaign, in one region. Tanager is a new
-question mark against all three: a different platform (spaceborne, not
-airborne), built and calibrated independently, flying over the same
-landscape roughly a year and a half later.
+hotspot on Earth (Cardoso et al., 2025). These efforts resulted in foliar trait maps for 20 traits across the CFR. These maps were trained entirely on one airborne sensor, over one campaign, in one region. We now have the opportunity to test whether our results derived from the airborne campaign align with results we might derive from spaceborne measurements.
 
 **Can an existing, independently-trained trait-model transfer to
 a brand-new commercial hyperspectral platform with *zero recalibration*?**
 That's the question this project set out to answer, using Tanager's
-example release scene over the Cape Floristic Region — and, once the
-methodology proved out, a second scene over California to test whether it
-generalizes across continents.
+example release scene over the Cape Floristic Region.
 
 The answer, in short is **yes** — and the caveats along the way turn out to be
 as informative as the successes.
@@ -52,10 +47,9 @@ campaign.*
 
 | Source | Role | Coverage used |
 |---|---|---|
-| Tanager (`basic_sr_hdf5`, Guido et al. 2025) | Primary test platform | Cape scene (2025-05-04), California scene (2025-04-07) |
+| Tanager (`basic_sr_hdf5`, Guido et al. 2025) | Primary test platform | Cape scene (2025-05-04) |
 | AVIRIS-NG (BioSCape campaign, Kovach et al. 2025) | Trait model training data + independent airborne validation | Nov 2023, Cape region |
 | EMIT | Independent spaceborne cross-check | 2026-03-02, same Cape area of interest (AOI) |
-| AVIRIS-NG (SHIFT campaign, Chadwick et al. 2025) | Trait model training data, California | Santa Barbara, 2022-02-24 to 2022-05-29 |
 
 **Trait models**: BioSCape's PLSR (partial least squares regression)
 foliar trait models — Nitrogen, Calcium, Lignin, and Cellulose, of the 20 traits in the full product — were trained on
@@ -67,10 +61,7 @@ an 85/15 train/validation split, with the 85% further split 30 times to
 select the optimal number of PLSR components, repeated across 200
 iterations to yield 200 models per trait — the mean prediction and the
 standard deviation across those 200 iterations are what this project
-treats as each trait's mean and uncertainty layers. A second,
-independently-trained model set from the SHIFT campaign (Santa Barbara,
-CA; Chadwick et al., 2025) — same AVIRIS-NG platform, different campaign
-and field dataset — was used for the California test.
+treats as each trait's mean and uncertainty layers.
 
 **Cross-sensor spectral matching**: Applying an AVIRIS-NG-trained model to
 Tanager reflectance isn't a matter of matching wavelengths alone — the two
@@ -103,12 +94,11 @@ departs from the same-sensor default here.
 **Vegetation masking**: Model training for the BioSCape trait maps
 excluded pixels below NDVI 0.4 or below 0.1 reflectance at 807 nm, to
 remove non-vegetated and shadowed pixels (Frye et al., in review). We
-independently derived masking thresholds for each scene used in this
-project (Tanager Cape, Tanager California) directly from that scene's own
-reflectance histogram rather than reusing these values outright, since
-surface reflectance levels aren't necessarily comparable band-for-band
-across sensors and processing pipelines. We ultimately used a similar
-NDVI-plus-NIR-brightness approach.
+independently derived a masking threshold for the Tanager Cape scene
+directly from its own reflectance histogram rather than reusing these
+values outright, since surface reflectance levels aren't necessarily
+comparable band-for-band across sensors and processing pipelines. We
+ultimately used a similar NDVI-plus-NIR-brightness approach.
 
 ## 3. Cape Floristic Region trait maps
 
@@ -230,48 +220,16 @@ precomputed AVIRIS-NG trait tiles use a different model variant
 (IR-only) than what we determined works best for Tanager/EMIT
 (Section 2) for three of the four traits. This conflict is an interesting finding arising out of cross-sensor application and could originate from differences in atmospheric correction procedures and sensor calibration.
 
-## 6. Generalizability with another Mediterranean system: Southern California
-
-To test whether this cross-sensor methodology is Cape-specific or
-general, we applied a second, independently-trained model set from
-NASA JPL's SHIFT campaign (Santa Barbara, CA; Chadwick et al., 2025),
-trained on AVIRIS-NG reflectance and SHIFT's own field-collected foliar
-chemistry (same platform as BioSCape, an entirely separate campaign and
-region) to a Tanager scene over the SHIFT study area, using the same
-FWHM-matching pipeline built for the Cape.
-
-![](figures/california_sidebyside_maps.png)
-
-*Figure 8. California (SHIFT models), all 4 traits, relabeled to
-relative Low/Med/High terciles per trait (scene-relative, not a
-numeric/field-referenced scale).*
-
-No ground-truth check has been done for California in this project. What
-this section demonstrates is that the *methodology* generalizes across
-two different Mediterranean-climate ecosystems on two continents, using
-two independently-trained model libraries. Short of field data, we
-can still ask whether the landscape pattern matches ecological
-expectations: agricultural and vineyard parcels visibly stand out from
-surrounding chaparral in the nitrogen map, consistent with fertilized
-cropland generally running higher in foliar nitrogen than native
-shrubland.
-
-## 7. The ask: increasing Tanager coverage of data-rich biodiverse regions
+## 6. The ask: increasing Tanager coverage of data-rich biodiverse regions
 
 Tanager is well positioned to become an invaluable resource as a producer of high quality foliar trait maps across the globe. These trait maps can be used in numerous domains including agriculture, forestry, and conservation management. As we have demonstrated in this short report, existing datasets can readily be applied to generate reasonable products.
 
-**High priority areas for future Tanager acquisitions**
-
-1. **More Tanager coverage of the Cape Floristic Region**, specifically
-   scenes that overlap BioSCape's existing ground-truth plot network and
-   processed airborne imagery. This region has more validation
-   infrastructure per square kilometer than almost anywhere else
-   hyperspectral trait models get tested — the current open-catalog scene
-   simply doesn't reach any of it.
-2. **More Tanager coverage of the SHIFT study area in California**, for
-   the same reason — an independently-trained, independently-validated
-   model library already exists there, ready to be checked against new
-   spaceborne data the moment coverage exists. Because SHIFT data was collected across a growing season, this is an ideal test bed for generating trait products across wide spatial domains, but also through time.
+**High priority area for future Tanager acquisitions**: more coverage of
+the Cape Floristic Region, specifically scenes that overlap BioSCape's
+existing ground-truth plot network and processed airborne imagery. This
+region has more validation infrastructure per square kilometer than
+almost anywhere else hyperspectral trait models get tested — the
+current open-catalog scene simply doesn't reach any of it.
 
 
 ---
@@ -295,23 +253,6 @@ AVIRIS-NG imagery. ORNL Distributed Active Archive Center. *(DOI pending
 IR-vs-full-spectrum comparison, and vegetation masking thresholds
 referenced in Sections 2-3. Expected public by the time this competition
 is reviewed, per Henry.)*
-
-Chadwick, K. D., Davis, F., Miner, K. R., Pavlick, R., Reynolds, M.,
-Townsend, P. A., Brodrick, P. G., et al. (2025). Unlocking ecological
-insights from sub-seasonal visible-to-shortwave infrared imaging
-spectroscopy: The SHIFT campaign. *Ecosphere*, 16(3), e70194.
-https://doi.org/10.1002/ecs2.70194 *(SHIFT's mission/campaign paper,
-parallel to Cardoso et al. 2025 for BioSCape — Ting Zheng, who confirmed
-the model training-data question, is a co-author.)*
-
-Brodrick, P. G., Pavlick, R., Bernas, M., Chapman, J. W., Eckert, R.,
-Helmlinger, M., Hess-Flores, M., Rios, L. M., Schneider, F. D., Smyth,
-M. M., Eastwood, M., Green, R. O., Thompson, D. R., Chadwick, K. D., &
-Schimel, D. S. (2023). SHIFT: AVIRIS-NG L2A Unrectified Surface
-Reflectance Version 1. ORNL Distributed Active Archive Center.
-https://doi.org/10.3334/ORNLDAAC/2376 *(The specific AVIRIS-NG
-reflectance product used to train the SHIFT trait models applied in
-Section 6 -- confirmed by Ting, matches the DAAC documentation.)*
 
 Frye, H., Aiello-Lammens, M. E., Euston-Brown, D., Jones, C. S., Kilroy
 Mollmann, H., Merow, C., Slingsby, J. A., van der Merwe, H., Turner, R.,
