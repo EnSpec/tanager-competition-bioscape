@@ -14,19 +14,19 @@ increasingly used to train models applied to space-borne sensors such as
 EMIT. Tanager is well-poised to serve as an alternative source of
 space-borne trait maps, with the advantage of being able to respond to
 ecological disturbances more nimbly than current airborne acquisitions and planned
-missions like EAGLE-VSWIR. 
+missions like EAGLE-VSWIR.
 
 The NASA-led Biodiversity Survey of the Cape ([BioSCape](https://www.bioscape.io)) offers a well-documented example of exactly this kind of
 airborne-trained resource, and is a natural test case for whether it can be put to work on a new platform. The 2023 campaign acquired near wall-to-wall coverage with the AVIRIS-NG sensor over the Cape Floristic Region (CFR), a global biodiversity hotspot and a region particularly affected by global change. Along with fieldwork led by the [Townsend lab](https://townsend.russell.wisc.edu) resulting in 542 field plots and thousands of leaf chemistry samples, this project has built one of the
 richest foliar trait-model libraries that exists for any biodiversity
-hotspot on Earth (Cardoso et al., 2025). These efforts resulted in foliar trait maps for 20 traits across the CFR. These maps were trained entirely on one airborne sensor, over one campaign, in one region. We now have the opportunity to test whether our results derived from the airborne campaign align with results we might derive from spaceborne measurements.
+hotspot on Earth (Cardoso et al., 2025). These efforts resulted in foliar trait maps for 20 traits across the CFR. These maps were trained entirely on one airborne sensor, over one campaign, in one region. We now have the opportunity to test whether our results derived from the airborne campaign align with results we might derive from space-borne measurements.
 
-**Can an existing, independently-trained trait-model transfer to
+**Can an existing, independently-trained trait model transfer to
 a brand-new commercial hyperspectral platform with *zero recalibration*?**
 That's the question this project set out to answer, using Tanager's
 example release scene over the Cape Floristic Region.
 
-The answer, in short is **yes** — and the caveats along the way turn out to be
+The answer, in short, is **yes** — and the caveats along the way turn out to be
 as informative as the successes.
 
 Missions like EAGLE-VSWIR will inherit this exact question the moment
@@ -49,12 +49,12 @@ campaign.*
 |---|---|---|
 | Tanager (`basic_sr_hdf5`, Guido et al. 2025) | Primary test platform | Cape scene (2025-05-04) |
 | AVIRIS-NG (BioSCape campaign, Kovach et al. 2025) | Trait model training data + independent airborne validation | Nov 2023, Cape region |
-| EMIT | Independent spaceborne cross-check | 2026-03-02, same Cape area of interest (AOI) |
+| EMIT | Independent space-borne cross-check | 2026-03-02, same Cape area of interest (AOI) |
 
 **Trait models**: BioSCape's PLSR (partial least squares regression)
-foliar trait models — Nitrogen, Calcium, Lignin, and Cellulose, of the 20 traits in the full product — were trained on
+foliar trait models — Nitrogen, Calcium, Lignin, and Cellulose — four of the 20 traits in the full product — were trained on
 AVIRIS-NG L2B enhanced surface reflectance (Kovach et al., 2025) and
-community-weighted-mean traits from 542 plots collected
+community-weighted-mean trait values from 542 plots collected
 concurrent with image acquisition (median 9-day mismatch between plot
 sampling and overpass). Training used an ensemble permutational approach:
 an 85/15 train/validation split, with the 85% further split 30 times to
@@ -102,7 +102,7 @@ ultimately used a similar NDVI-plus-NIR-brightness approach.
 
 ## 3. Cape Floristic Region trait maps
 
-To assess whether predictions were realistic using the BioSCape models and applied to the Tanager scene, we checked the predicted values against
+To assess whether predictions from the BioSCape models, applied to the Tanager scene, were realistic, we checked the predicted values against
 646 community-weighted-mean field plot values across the Cape Floristic
 Region — none of which happen to fall inside this specific scene
 (nearest cluster is 17.5 km outside the scene edge). A broader regional
@@ -118,7 +118,7 @@ overlap too, with its nearest sample ~60 km away. This is one of the most densel
 | Calcium | 19.08 mg/g | 7.24 mg/g | 95.3% |
 | Cellulose | 101–107 mg/g | 161.63 mg/g | 53.1% |
 
-It's worth noting that the predictive performance of these traits weren't equally strong: BioSCape's own validation (independent AVIRIS-NG holdout
+It's worth noting that the predictive performance of these traits wasn't equally strong: BioSCape's own validation (independent AVIRIS-NG holdout
 data, not cross-sensor; Frye et al., in review) reports Nitrogen and
 Calcium as more reliable models (NRMSE 0.109 and 0.081, Nash-Sutcliffe
 Efficiency 0.313 and 0.26), with Lignin and Cellulose already weaker
@@ -128,7 +128,7 @@ on its own; Cellulose's cross-sensor weakness is at least partly
 inherited rather than purely a transfer artifact.
 
 Lignin is the closest match to field values outright. 95% of vegetated
-pixels for Nitrogen and Calcium pass their own model's mask constrained to the mininum and maximum of the obversed ground values.  Nitrogen's absolute values do track the field data closely, but Calcium's don't — it runs roughly 2.6x higher, a bias that only surfaced once we checked against real field values instead of relying on that basic bounds check. Cellulose is the weakest of the four: only about half of vegetated pixels pass the observed min/max mask.
+pixels for Nitrogen and Calcium pass their own model's mask constrained to the minimum and maximum of the observed ground values. Nitrogen's absolute values do track the field data closely, but Calcium's don't — it runs roughly 2.6x higher, a bias that only surfaced once we checked against real field values instead of relying on that basic bounds check. Cellulose is the weakest of the four: only about half of vegetated pixels pass the observed min/max mask.
 
 ![](figures/ternary_field_referenced.png)
 
@@ -140,7 +140,7 @@ region-wide CWM field-data ranges.*
 No EMIT overpass exists near Tanager's exact acquisition date — the
 nearest same-year passes were 71–101 days off-season. Checking day-of-year
 proximity across every EMIT acquisition ever made over this footprint
-(EMIT is hosted onboard the International Space Station (ISS) meaning that coverage is opportunistic, not a fixed revisit) found a much closer seasonal match a year earlier
+(EMIT is hosted onboard the International Space Station (ISS), meaning that coverage is opportunistic, not a fixed revisit) found a much closer seasonal match a year earlier
 (15 days off), but that pass's swath only clips 17% of the scene. We chose
 the best full-coverage option instead: 2026-03-02, 63 days off-season but
 100% AOI coverage in a single granule.
@@ -179,7 +179,7 @@ exact grid.*
 
 Within the difference map, Lignin's offset is
 close to **uniform across the entire scene** — consistent with a
-systematic sensor/calibration difference rather than a landcover effect.
+systematic sensor/calibration difference rather than a land cover effect.
 Calcium's disagreement, by contrast, has real **spatial structure** — the
 southern part of the scene runs noticeably higher for EMIT than the
 north, which is not what you'd expect from simple noise. A number of
@@ -195,7 +195,7 @@ cross-sensor offset.
 
 BioSCape's own AVIRIS-NG airborne campaign flew directly under part of
 this Tanager scene in November 2023 — 30.6% of the footprint, across 24
-processed flight-line tiles. We built a mosaic that chooses the low uncertainty pixel in the case of tile flightline overlap and
+processed flightline tiles. We built a mosaic that chooses the low-uncertainty pixel in the case of flightline tile overlap and
 compared it against the Tanager and EMIT predictions in the overlap area.
 
 For Nitrogen, all three independently-processed products land close
@@ -230,7 +230,6 @@ existing ground-truth plot network and processed airborne imagery. This
 region has more validation infrastructure per square kilometer than
 almost anywhere else hyperspectral trait models get tested — the
 current open-catalog scene simply doesn't reach any of it.
-
 
 ---
 
