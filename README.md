@@ -1,6 +1,6 @@
 # Tanager Data Competition Entry
 
-This repository is a submission to Planet's [2026 Tanager Open Data Competition](https://learn.planet.com/2026-Tanager-Open-Data-Competition.html). It applies existing BioSCape-trained foliar trait models (Cape Floristic Region, South Africa) to Planet's example Tanager-1 release scene to produce trait maps, then cross-checks those predictions against an independent spaceborne sensor (EMIT) and BioSCape's own airborne imagery over the same area. See `writeup/report_draft.md` for the full analysis and results.
+This repository is a submission to Planet's [2026 Tanager Open Data Competition](https://learn.planet.com/2026-Tanager-Open-Data-Competition.html). It applies existing BioSCape-trained trait models (Cape Floristic Region, South Africa) to Planet's example Tanager-1 release scene to produce trait maps, then cross-checks those predictions against an independent spaceborne sensor (EMIT) and BioSCape's own airborne imagery over the same area. See `writeup/report_draft.md` for the full analysis and results.
 
 ![Ternary trait composite (nitrogen/lignin/calcium) over the Cape Floristic Region Tanager scene](writeup/figures/ternary_composite_preview.png)
 

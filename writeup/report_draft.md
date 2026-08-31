@@ -1,6 +1,6 @@
 # Cross-Sensor Transfer of Airborne Trait Models to Tanager: A BioSCape Case Study
 
-**Code and data**: [github.com/EnSpec/tanager-competition](https://github.com/EnSpec/tanager-competition)
+**Code and data**: [github.com/EnSpec/tanager-competition-bioscape](https://github.com/EnSpec/tanager-competition-bioscape)
 
 ---
 
