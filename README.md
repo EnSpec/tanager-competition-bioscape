@@ -5,14 +5,14 @@ This repository is a submission to Planet's [2026 Tanager Open Data Competition]
 ![Ternary trait composite (nitrogen/lignin/calcium) over the Cape Floristic Region Tanager scene](writeup/figures/ternary_composite_preview.png)
 
 *Ternary composite (nitrogen (red) / lignin (green) / calcium (blue)) predicted from the Tanager scene north of the Brandvlei dam, South Africa. Predicted traits are normalized to this scene's own value range for visual impact (the report's
-actual analysis figures use field-data-referenced ranges instead). See `writeup/report_draft.md` for the full write-up, `code/step15_readme_banner_ternary.py` for this banner image, and `code/step5_ternary_map.py` for the report's field-referenced
+actual analysis figures use ranges normalized to regional field data instead). See `writeup/report_draft.md` for the full write-up, `code/step15_readme_banner_ternary.py` for this banner image, and `code/step5_ternary_map.py` for the report's field-referenced
 version.*
 
 ## Reproducibility note
 
 This repository's code is public and documents the full method, but not
-every input dataset is publicly available yet. Breakdown of what's
-independently obtainable versus internal:
+every input dataset is publicly available yet. Below is a breakdown of what is
+independently obtainable versus internally stored at EnSpec:
 
 - **Publicly available, independent of this project**: the Tanager scene
   (Planet's open STAC catalog), the EMIT granule (NASA Earthdata), and the
