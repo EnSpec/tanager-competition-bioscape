@@ -1,5 +1,7 @@
 # Cross-Sensor Transfer of Airborne Trait Models to Tanager: A BioSCape Case Study
 
+**Code and data**: [github.com/EnSpec/tanager-competition](https://github.com/EnSpec/tanager-competition)
+
 ---
 
 ## 1. Can Tanager Deliver Airborne-Quality Foliar Trait Maps From Orbit?
