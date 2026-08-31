@@ -162,3 +162,14 @@ codebase can do.
   `pyproj` pull in numpy 2.x, which can break version pins other
   projects rely on in a shared environment. Always run this repository's
   scripts with `.venv/bin/python3`.
+
+## AI use disclosure
+
+This project's code and written materials (including this README and
+the report) were developed with substantial assistance from Claude
+(Anthropic), used via Claude Code, for code generation and debugging,
+data-processing pipeline design, and editorial/writing support. The
+primary model used was Claude Sonnet 5 (exact model version may vary
+across earlier sessions in this project's development). Scientific
+claims, methodological choices, and conclusions were directed and
+reviewed by the author throughout.

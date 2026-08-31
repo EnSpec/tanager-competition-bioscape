@@ -212,6 +212,15 @@ existing ground-truth plot network and processed airborne imagery. This
 region has more validation infrastructure per square kilometer than
 almost anywhere else hyperspectral trait models get tested and would provide an important benchmark in assessing space-borne trait mapping accuracy.
 
+## Acknowledgment of AI assistance
+
+This report and its accompanying codebase were developed with
+substantial assistance from Claude (Anthropic), used via Claude Code,
+for code generation and debugging, data-analysis pipeline development,
+and writing/editing support. The primary model used was Claude Sonnet
+5. All scientific claims, methodological decisions, and conclusions
+were directed and reviewed by the author.
+
 ---
 
 ## References
